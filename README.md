@@ -25,6 +25,7 @@ Jóvenes de 18 a 25 años con ingresos propios que quieren entender las finanzas
 - `assets/`: las imágenes de la app. Hoy no tiene imágenes, porque el prototipo dibuja sus gráficos con código.
 - `css/`: los estilos del design kit. `tokens.css` tiene los colores, letras y medidas, y `components.css` tiene los botones, tarjetas, campos y demás piezas.
 - `componentes.html`: el catálogo con todas las piezas del design kit. Se abre con doble clic en el navegador.
+- `spec.md`: el plano de la app: el flujo de pantallas, los datos y, para cada pantalla, qué hace y cuándo está lista.
 - `decisiones-design-kit.md`: las decisiones del equipo sobre colores, letras, espacios, bordes y componentes.
 - `auditoria-design-kit.md`: la revisión de los diseños que dio origen a esas decisiones.
 - `CLAUDE.md`: las instrucciones que sigue Claude Code al trabajar en este proyecto.
