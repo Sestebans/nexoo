@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Componentes · NEXO</title>
+
+  <!-- El design kit: primero los tokens, después los componentes -->
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/components.css">
+
+  <!-- Estilos solo de esta página del catálogo (también usan solo variables) -->
+  <style>
+    .catalogo { display: grid; gap: var(--espacio-8); max-width: calc(var(--ancho-app) * 2); margin: 0 auto; padding: var(--espacio-6) var(--espacio-4) var(--espacio-8); }
+    .catalogo__seccion { display: grid; gap: var(--espacio-4); }
+    .catalogo__encabezado { display: grid; gap: var(--espacio-2); }
+    .catalogo__indice { display: flex; flex-wrap: wrap; gap: var(--espacio-2); }
+    .catalogo__rejilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(calc(var(--alto-control-lg) * 2), 1fr)); gap: var(--espacio-3); }
+    .catalogo__lista { display: grid; gap: var(--espacio-4); }
+    .catalogo__item { display: grid; gap: var(--espacio-3); margin: 0; padding: var(--espacio-4); border: var(--borde-fino) solid var(--color-borde); border-radius: var(--radio-xl); background: var(--color-superficie); }
+    .catalogo__demo { display: grid; gap: var(--espacio-3); padding: var(--espacio-4); border-radius: var(--radio-lg); background: var(--color-fondo); overflow: hidden; }
+    .catalogo__demo--oscuro { background: var(--color-primario); }
+    .catalogo__demo--natural { justify-items: start; }
+    .catalogo__demo { overflow-x: auto; }
+    @media (max-width: 420px) {
+      .catalogo { padding-left: var(--espacio-3); padding-right: var(--espacio-3); }
+      .catalogo__item { padding: var(--espacio-3); }
+      .catalogo__demo { padding: var(--espacio-3); }
+    }
+    .catalogo__nombre { font-family: monospace; font-weight: var(--peso-fuerte); color: var(--color-ia); }
+    .catalogo__codigo { margin: 0; padding: var(--espacio-3); border-radius: var(--radio-md); background: var(--color-fondo-suave); font-family: monospace; font-size: var(--texto-xs); line-height: var(--linea-texto); overflow-x: auto; }
+    .muestra { display: grid; gap: var(--espacio-1); }
+    .muestra__color { height: var(--alto-control-lg); border: var(--borde-fino) solid var(--color-borde); border-radius: var(--radio-md); }
+    .muestra__nombre { font-family: monospace; font-size: var(--texto-xs); font-weight: var(--peso-fuerte); word-break: break-all; }
+    .muestra__valor { font-family: monospace; font-size: var(--texto-xs); color: var(--color-texto-suave); }
+    .escala { display: grid; gap: var(--espacio-1); padding: var(--espacio-3) 0; border-bottom: var(--borde-fino) solid var(--color-borde); }
+    .escala__dato { font-family: monospace; font-size: var(--texto-xs); color: var(--color-texto-suave); }
+    .escala--xs p { font-size: var(--texto-xs); }
+    .escala--sm p { font-size: var(--texto-sm); }
+    .escala--base p { font-size: var(--texto-base); }
+    .escala--lg p { font-size: var(--texto-lg); }
+    .escala--xl p { font-size: var(--texto-xl); }
+    .escala--2xl p { font-size: var(--texto-2xl); }
+    .fuente__muestra-titulos { font-family: var(--fuente-titulos); font-size: var(--texto-2xl); font-weight: var(--peso-fuerte); line-height: var(--linea-titulo); }
+    .fuente__muestra-texto { font-family: var(--fuente-texto); font-size: var(--texto-lg); }
+    .fuente__muestra-respaldo { font-family: Arial, sans-serif; font-size: var(--texto-lg); }
+    .espacio-barra { height: var(--espacio-3); border-radius: var(--radio-total); background: var(--color-secundario); border: var(--borde-fino) solid var(--color-primario); }
+    .forma { display: grid; place-items: center; height: calc(var(--alto-control-lg) * 1.5); border: var(--borde-grueso) solid var(--color-primario); background: var(--color-superficie); font-size: var(--texto-xs); font-weight: var(--peso-fuerte); }
+    .estado-fuente { align-self: start; }
+  </style>
+</head>
+<body>
+
+<!-- Íconos del catálogo (dibujados con código; en la app se copian donde se usen) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-mas" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-flecha-izq" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></symbol>
+  <symbol id="i-flecha-der" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+  <symbol id="i-campana" viewBox="0 0 24 24"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></symbol>
+  <symbol id="i-llama" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol>
+  <symbol id="i-lupa" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+  <symbol id="i-enviar" viewBox="0 0 24 24"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></symbol>
+  <symbol id="i-casa" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="i-billetera" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol>
+  <symbol id="i-meta" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+  <symbol id="i-usuario" viewBox="0 0 24 24"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></symbol>
+  <symbol id="i-microfono" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></symbol>
+  <symbol id="i-alerta" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+  <symbol id="i-circulo-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
+</svg>
+
+<main class="catalogo">
+
+  <header class="catalogo__encabezado">
+    <div class="fila">
+      <span class="logo">
+        <svg viewBox="0 0 48 48" aria-hidden="true"><path class="logo__linea" d="M15 32L33 16" stroke-width="3.5" stroke-linecap="round"/><circle class="logo__nodo" cx="15" cy="32" r="5.5"/><circle class="logo__nodo logo__nodo--acento" cx="33" cy="16" r="5.5"/></svg>
+      </span>
+      <h1 class="titulo-pantalla">Catálogo de componentes</h1>
+    </div>
+    <p class="texto-suave">Design kit de NEXO. Todo sale de <code>css/tokens.css</code> (variables) y <code>css/components.css</code> (componentes). Pasa el mouse sobre los botones y usa la tecla Tab para ver los estados de hover y de foco.</p>
+    <nav class="catalogo__indice" aria-label="Secciones">
+      <a class="etiqueta etiqueta--suave" href="#fuentes">Fuentes</a>
+      <a class="etiqueta etiqueta--suave" href="#colores">Colores</a>
+      <a class="etiqueta etiqueta--suave" href="#tipografia">Tipografía</a>
+      <a class="etiqueta etiqueta--suave" href="#medidas">Espacios y bordes</a>
+      <a class="etiqueta etiqueta--suave" href="#botones">Botones</a>
+      <a class="etiqueta etiqueta--suave" href="#chips">Chips y etiquetas</a>
+      <a class="etiqueta etiqueta--suave" href="#tarjetas">Tarjetas</a>
+      <a class="etiqueta etiqueta--suave" href="#formularios">Formularios</a>
+      <a class="etiqueta etiqueta--suave" href="#avisos">Avisos y chat</a>
+      <a class="etiqueta etiqueta--suave" href="#navegacion">Navegación</a>
+      <a class="etiqueta etiqueta--suave" href="#listas">Listas y progreso</a>
+      <a class="etiqueta etiqueta--suave" href="#marca">Íconos y logo</a>
+    </nav>
+  </header>
+
+
+  <!-- ============ FUENTES ============ -->
+  <section class="catalogo__seccion" id="fuentes">
+    <h2 class="titulo-interno">Fuentes y cómo comprobarlas</h2>
+    <p class="texto-suave">Las dos fuentes se cargan desde <strong>Google Fonts</strong> con el <code>@import</code> al inicio de <code>tokens.css</code>. Necesitan internet. Si no cargan, el navegador usa Arial. Cada tarjeta dice si la fuente cargó de verdad.</p>
+
+    <div class="catalogo__lista">
+      <div class="catalogo__item">
+        <div class="fila fila--ajusta">
+          <span class="catalogo__nombre">--fuente-titulos</span>
+          <span class="etiqueta etiqueta--suave estado-fuente" data-fuente="700 1em &quot;Bricolage Grotesque&quot;">Comprobando…</span>
+        </div>
+        <p class="fuente__muestra-titulos">Tu plata, sin rodeos 1234567890</p>
+        <p class="texto-suave texto-pequeno">Debe ser <strong>Bricolage Grotesque</strong>: letras gruesas y con carácter. Compárala con Arial:</p>
+        <p class="fuente__muestra-respaldo" style="font-weight: var(--peso-fuerte)">Tu plata, sin rodeos 1234567890 (así se ve Arial)</p>
+        <p class="texto-suave texto-pequeno">Valor actual: <code data-familia="--fuente-titulos"></code></p>
+      </div>
+      <div class="catalogo__item">
+        <div class="fila fila--ajusta">
+          <span class="catalogo__nombre">--fuente-texto</span>
+          <span class="etiqueta etiqueta--suave estado-fuente" data-fuente="400 1em &quot;DM Sans&quot;">Comprobando…</span>
+        </div>
+        <p class="fuente__muestra-texto">Mira cuánto te queda este mes y cuánto puedes gastar al día.</p>
+        <p class="texto-suave texto-pequeno">Debe ser <strong>DM Sans</strong>: redonda y limpia. Compárala con Arial:</p>
+        <p class="fuente__muestra-respaldo">Mira cuánto te queda este mes y cuánto puedes gastar al día. (así se ve Arial)</p>
+        <p class="texto-suave texto-pequeno">Valor actual: <code data-familia="--fuente-texto"></code></p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============ COLORES ============ -->
+  <section class="catalogo__seccion" id="colores">
+    <h2 class="titulo-interno">Colores</h2>
+    <p class="texto-suave">Cada muestra dice el nombre de la variable y su valor real, leído de <code>tokens.css</code>.</p>
+    <div id="rejillas-colores" class="catalogo__lista"></div>
+  </section>
+
+
+  <!-- ============ TIPOGRAFÍA ============ -->
+  <section class="catalogo__seccion" id="tipografia">
+    <h2 class="titulo-interno">Escala tipográfica</h2>
+    <div>
+      <div class="escala escala--xs"><span class="catalogo__nombre">--texto-xs</span><span class="escala__dato"></span><p>Etiquetas pequeñas: ahorro, Inicio, Gastos</p></div>
+      <div class="escala escala--sm"><span class="catalogo__nombre">--texto-sm</span><span class="escala__dato"></span><p>Texto pequeño: etiquetas de campo, alertas, chips</p></div>
+      <div class="escala escala--base"><span class="catalogo__nombre">--texto-base</span><span class="escala__dato"></span><p>Texto normal: así se lee un párrafo en la app</p></div>
+      <div class="escala escala--lg"><span class="catalogo__nombre">--texto-lg</span><span class="escala__dato"></span><p style="font-family: var(--fuente-titulos); font-weight: var(--peso-fuerte)">Subtítulos y títulos de tarjeta</p></div>
+      <div class="escala escala--xl"><span class="catalogo__nombre">--texto-xl</span><span class="escala__dato"></span><p style="font-family: var(--fuente-titulos); font-weight: var(--peso-fuerte)">Títulos de pantallas internas</p></div>
+      <div class="escala escala--2xl"><span class="catalogo__nombre">--texto-2xl</span><span class="escala__dato"></span><p style="font-family: var(--fuente-titulos); font-weight: var(--peso-fuerte)">Títulos de pantalla</p></div>
+    </div>
+    <p class="texto-suave texto-pequeno">Pesos: <code>--peso-normal</code> (400) para texto, <code>--peso-fuerte</code> (700) para destacados y <code>--peso-cifra</code> (800) solo en cifras.</p>
+
+    <div class="catalogo__lista">
+      <div class="catalogo__item">
+        <span class="catalogo__nombre">.titulo-pantalla · .titulo-interno · .titulo-tarjeta · .etiqueta-mayuscula</span>
+        <div class="catalogo__demo pila" data-codigo>
+          <h1 class="titulo-pantalla">Gastos</h1>
+          <h2 class="titulo-interno">Registrar gasto</h2>
+          <h3 class="titulo-tarjeta">Tu meta</h3>
+          <p class="etiqueta-mayuscula">Tu copiloto financiero</p>
+        </div>
+      </div>
+      <div class="catalogo__item">
+        <span class="catalogo__nombre">.cifra · .cifra--xl · .cifra--m</span>
+        <div class="catalogo__demo pila" data-codigo>
+          <span class="cifra cifra--xl">$ 1.250.000</span>
+          <span class="cifra">$ 85.000</span>
+          <span class="cifra cifra--m">$ 15.000</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============ ESPACIOS, RADIOS, BORDES ============ -->
+  <section class="catalogo__seccion" id="medidas">
+    <h2 class="titulo-interno">Espacios, radios, bordes y sombras</h2>
+
+    <div class="catalogo__item">
+      <span class="catalogo__nombre">Espacios (múltiplos de 4 px)</span>
+      <div class="pila" id="espacios"></div>
+    </div>
+
+    <div class="catalogo__item">
+      <span class="catalogo__nombre">Radios</span>
+      <div class="catalogo__rejilla">
+        <div class="forma" style="border-radius: var(--radio-sm)">--radio-sm</div>
+        <div class="forma" style="border-radius: var(--radio-md)">--radio-md</div>
+        <div class="forma" style="border-radius: var(--radio-lg)">--radio-lg</div>
+        <div class="forma" style="border-radius: var(--radio-xl)">--radio-xl</div>
+        <div class="forma" style="border-radius: var(--radio-total)">--radio-total</div>
+      </div>
+    </div>
+
+    <div class="catalogo__item">
+      <span class="catalogo__nombre">Bordes y sombras</span>
+      <div class="catalogo__rejilla">
+        <div class="forma" style="border: var(--borde-fino) solid var(--color-primario)">--borde-fino</div>
+        <div class="forma" style="border: var(--borde-grueso) solid var(--color-primario)">--borde-grueso</div>
+        <div class="forma" style="border: var(--borde-foco) solid var(--color-ia)">--borde-foco</div>
+        <div class="forma" style="box-shadow: var(--sombra-suave); border-color: transparent">--sombra-suave</div>
+        <div class="forma" style="box-shadow: var(--sombra-media); border-color: transparent; background: var(--color-fondo-suave)">--sombra-media</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============ BOTONES ============ -->
+  <section class="catalogo__seccion" id="botones">
+    <h2 class="titulo-interno">Botones</h2>
+    <div class="catalogo__lista">
+
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.boton</figcaption>
+        <div class="catalogo__demo catalogo__demo--natural" data-codigo>
+          <button class="boton">Registrar gasto de hoy</button>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.boton--secundario</figcaption>
+        <div class="catalogo__demo catalogo__demo--natural" data-codigo>
+          <button class="boton boton--secundario">Registrar un gasto</button>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.boton--terciario</figcaption>
+        <div class="catalogo__demo catalogo__demo--natural" data-codigo>
+          <button class="boton boton--terciario">Ajustar meta</button>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.boton--texto</figcaption>
+        <div class="catalogo__demo catalogo__demo--natural" data-codigo>
+          <button class="boton boton--texto">Cancelar</button>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.boton--peligro</figcaption>
+        <div class="catalogo__demo catalogo__demo--natural" data-codigo>
+          <button class="boton boton--peligro">Eliminar gasto</button>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.boton--pequeno y .boton--completo</figcaption>
+        <div class="catalogo__demo catalogo__demo--natural" data-codigo>
+          <button class="boton boton--pequeno">Registrar</button>
+          <button class="boton boton--completo">Continuar</button>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">Estado :disabled (atributo disabled)</figcaption>
+        <div class="catalogo__demo catalogo__demo--natural" data-codigo>
+          <button class="boton" disabled>Guardar gasto</button>
+          <button class="boton boton--secundario" disabled>Canjear</button>
+          <button class="boton boton--terciario" disabled>Deshacer</button>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.boton-icono (con --activo, --primario y --compacto)</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <div class="fila">
+            <button class="boton-icono" aria-label="Avisos">
+              <svg class="icono" aria-hidden="true"><use href="#i-campana"/></svg>
+              <span class="contador">2</span>
+            </button>
+            <button class="boton-icono boton-icono--activo" aria-label="Perfil">
+              <svg class="icono" aria-hidden="true"><use href="#i-usuario"/></svg>
+            </button>
+            <button class="boton-icono boton-icono--primario" aria-label="Enviar">
+              <svg class="icono" aria-hidden="true"><use href="#i-enviar"/></svg>
+            </button>
+            <button class="boton-icono boton-icono--compacto" aria-label="Volver">
+              <svg class="icono" aria-hidden="true"><use href="#i-flecha-izq"/></svg>
+            </button>
+            <button class="boton-icono" aria-label="Deshabilitado" disabled>
+              <svg class="icono" aria-hidden="true"><use href="#i-mas"/></svg>
+            </button>
+          </div>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.modos + .boton-modo (--principal, --grabando)</figcaption>
+        <div class="catalogo__demo pila" data-codigo>
+          <div class="modos">
+            <button class="boton-modo boton-modo--principal">
+              <svg class="icono" aria-hidden="true"><use href="#i-microfono"/></svg> Grabar audio
+            </button>
+            <button class="boton-modo">Escribir</button>
+          </div>
+          <button class="boton-modo boton-modo--grabando">Te escucho… toca para parar</button>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.boton-util (--activo) y .chip-racha</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <div class="fila fila--ajusta">
+            <button class="boton-util">Marcar como útil · 3</button>
+            <button class="boton-util boton-util--activo">Marcar como útil · 4</button>
+            <button class="chip-racha">
+              <svg class="icono icono--sm" aria-hidden="true"><use href="#i-llama"/></svg> 5
+            </button>
+          </div>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+
+  <!-- ============ CHIPS Y ETIQUETAS ============ -->
+  <section class="catalogo__seccion" id="chips">
+    <h2 class="titulo-interno">Chips y etiquetas</h2>
+    <div class="catalogo__lista">
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.chip (--activo o aria-pressed="true")</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <div class="chips">
+            <button class="chip" aria-pressed="false">Comida</button>
+            <button class="chip" aria-pressed="true">Transporte</button>
+            <button class="chip" aria-pressed="false">
+              <svg class="icono icono--sm" aria-hidden="true"><use href="#i-billetera"/></svg> Otro
+            </button>
+            <button class="chip" disabled>Deshabilitado</button>
+          </div>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.chips--desliza (se desliza de lado en celular)</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <div class="chips chips--desliza">
+            <button class="chip">¿Cuánto puedo gastar al día?</button>
+            <button class="chip">¿Voy bien con mi meta?</button>
+            <button class="chip">¿En qué gasté más?</button>
+          </div>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.etiqueta (--oscura, --suave, --ia)</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <div class="fila fila--ajusta">
+            <span class="etiqueta">45%</span>
+            <span class="etiqueta etiqueta--oscura">Lista</span>
+            <span class="etiqueta etiqueta--suave">Ejemplo</span>
+            <span class="etiqueta etiqueta--ia">IA</span>
+          </div>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.insignia-pro</figcaption>
+        <div class="catalogo__demo catalogo__demo--oscuro" data-codigo>
+          <div class="fila">
+            <span class="logotipo" style="color: var(--color-texto-inverso)">NEXO</span>
+            <span class="insignia-pro">PRO</span>
+          </div>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+
+  <!-- ============ TARJETAS ============ -->
+  <section class="catalogo__seccion" id="tarjetas">
+    <h2 class="titulo-interno">Tarjetas</h2>
+    <div class="catalogo__lista">
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.tarjeta</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <section class="tarjeta pila">
+            <h3 class="titulo-tarjeta">Lo que más pesa este mes</h3>
+            <p class="texto-suave">Comida: 42 % de lo que has registrado.</p>
+          </section>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.tarjeta--acento</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <section class="tarjeta tarjeta--acento pila">
+            <h3 class="titulo-tarjeta">5 días de racha</h3>
+            <p>Registra un gasto hoy y sigue sumando.</p>
+          </section>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.tarjeta--oscura (con .barra-progreso--sobre-oscuro)</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <section class="tarjeta tarjeta--oscura pila">
+            <p class="texto-suave">Te quedan este mes</p>
+            <span class="cifra cifra--xl">$ 620.000</span>
+            <div class="barra-progreso barra-progreso--sobre-oscuro" style="--progreso: 58%"><span class="barra-progreso__relleno"></span></div>
+            <p class="texto-suave texto-pequeno">Puedes gastar al día: $ 31.000</p>
+          </section>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.tarjeta--boton (toda la tarjeta se toca)</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <button class="tarjeta tarjeta--boton pila">
+            <span class="titulo-tarjeta">Viaje a Cartagena</span>
+            <span class="texto-suave texto-pequeno">$ 450.000 de $ 1.500.000</span>
+          </button>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.tarjeta--vacia y .tarjeta--bloqueada</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <div class="tarjeta tarjeta--vacia pila">
+            <p>Todavía no hay gastos. El primero toma 10 segundos.</p>
+            <button class="boton boton--secundario">Registrar mi primer gasto</button>
+          </div>
+          <div class="tarjeta tarjeta--bloqueada">
+            <h3 class="titulo-tarjeta">7 días de NEXO Pro</h3>
+            <p class="texto-suave texto-pequeno">Se desbloquea con 7 días de racha.</p>
+          </div>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.nota-ayuda (--oscura)</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <p class="nota-ayuda">Es lo que te queda este mes dividido entre los días que faltan.</p>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+
+  <!-- ============ FORMULARIOS ============ -->
+  <section class="catalogo__seccion" id="formularios">
+    <h2 class="titulo-interno">Formularios</h2>
+    <div class="catalogo__lista">
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.grupo-campo + .etiqueta-campo + .campo</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <div class="grupo-campo">
+            <label class="etiqueta-campo" for="ej-ingresos">Ingresos mensuales</label>
+            <input class="campo" id="ej-ingresos" inputmode="numeric" placeholder="$ 1.500.000">
+          </div>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.campo--error + .mensaje-error</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <div class="grupo-campo">
+            <label class="etiqueta-campo" for="ej-meta">Tu primera meta</label>
+            <input class="campo campo--error" id="ej-meta" aria-invalid="true" aria-describedby="ej-meta-error">
+            <span class="mensaje-error" id="ej-meta-error">Cuéntame qué quieres lograr.</span>
+          </div>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">Estado :disabled</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <input class="campo" placeholder="Campo deshabilitado" disabled aria-label="Campo deshabilitado">
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.campo--area</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <div class="grupo-campo">
+            <label class="etiqueta-campo" for="ej-pregunta">Tu pregunta</label>
+            <textarea class="campo campo--area" id="ej-pregunta" placeholder="Escribe tu pregunta sobre tu plata…"></textarea>
+          </div>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.campo-monto (con --error)</figcaption>
+        <div class="catalogo__demo pila" data-codigo>
+          <div class="campo-monto">
+            <span class="campo-monto__simbolo">$</span>
+            <input class="campo-monto__entrada" inputmode="numeric" placeholder="0" aria-label="Monto">
+          </div>
+          <div class="campo-monto campo-monto--error">
+            <span class="campo-monto__simbolo">$</span>
+            <input class="campo-monto__entrada" inputmode="numeric" value="0" aria-label="Monto con error">
+          </div>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.campo--chat con .boton-icono--primario</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <form class="fila">
+            <input class="campo campo--chat" placeholder="Escribe tu pregunta sobre tu plata…" aria-label="Tu pregunta">
+            <button class="boton-icono boton-icono--primario" aria-label="Enviar">
+              <svg class="icono" aria-hidden="true"><use href="#i-enviar"/></svg>
+            </button>
+          </form>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.buscador</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <div class="buscador">
+            <svg class="icono buscador__icono" aria-hidden="true"><use href="#i-lupa"/></svg>
+            <input class="campo" placeholder="Buscar o filtrar preguntas" aria-label="Buscar preguntas">
+          </div>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+
+  <!-- ============ AVISOS Y CHAT ============ -->
+  <section class="catalogo__seccion" id="avisos">
+    <h2 class="titulo-interno">Avisos y chat</h2>
+    <div class="catalogo__lista">
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.alerta--exito · .alerta--aviso · .alerta--error</figcaption>
+        <div class="catalogo__demo pila" data-codigo>
+          <div class="alerta alerta--exito" role="status">
+            <svg class="icono" aria-hidden="true"><use href="#i-circulo-check"/></svg>
+            <div>Entendí: "gasté 15 mil en almuerzo". Revisa los datos y guarda.</div>
+          </div>
+          <div class="alerta alerta--aviso" role="alert">
+            <svg class="icono" aria-hidden="true"><use href="#i-alerta"/></svg>
+            <div>Este monto es mayor que lo que recibes al mes.</div>
+          </div>
+          <div class="alerta alerta--error" role="alert">
+            <svg class="icono" aria-hidden="true"><use href="#i-alerta"/></svg>
+            <div>Revisa el monto. Debe ser un número mayor a cero.</div>
+          </div>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.aviso-temporal</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <div class="aviso-temporal">
+            <span>Gasto eliminado</span>
+            <button class="aviso-temporal__accion">Deshacer</button>
+          </div>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.chat con .burbuja--usuario y .burbuja--nexo</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <div class="chat">
+            <div class="burbuja burbuja--usuario">¿Cuánto puedo gastar al día?</div>
+            <div class="burbuja burbuja--nexo">
+              <div class="burbuja__encabezado">
+                <span class="logo logo--sm">
+                  <svg viewBox="0 0 48 48" aria-hidden="true"><path class="logo__linea" d="M15 32L33 16" stroke-width="3.5" stroke-linecap="round"/><circle class="logo__nodo" cx="15" cy="32" r="5.5"/><circle class="logo__nodo logo__nodo--acento" cx="33" cy="16" r="5.5"/></svg>
+                </span>
+                NEXO
+              </div>
+              Este mes te quedan $ 620.000 y faltan 20 días. Eso da unos $ 31.000 al día.
+            </div>
+          </div>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+
+  <!-- ============ NAVEGACIÓN ============ -->
+  <section class="catalogo__seccion" id="navegacion">
+    <h2 class="titulo-interno">Navegación</h2>
+    <div class="catalogo__lista">
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.barra-pestana</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <header class="barra-pestana">
+            <span class="logo logo--sm">
+              <svg viewBox="0 0 48 48" aria-hidden="true"><path class="logo__linea" d="M15 32L33 16" stroke-width="3.5" stroke-linecap="round"/><circle class="logo__nodo" cx="15" cy="32" r="5.5"/><circle class="logo__nodo logo__nodo--acento" cx="33" cy="16" r="5.5"/></svg>
+            </span>
+            <span class="logotipo">NEXO</span>
+            <span class="espaciador"></span>
+            <button class="boton-icono" aria-label="Avisos">
+              <svg class="icono" aria-hidden="true"><use href="#i-campana"/></svg>
+              <span class="contador">2</span>
+            </button>
+            <button class="chip-racha"><svg class="icono icono--sm" aria-hidden="true"><use href="#i-llama"/></svg> 5</button>
+            <button class="boton-icono" aria-label="Perfil"><svg class="icono" aria-hidden="true"><use href="#i-usuario"/></svg></button>
+          </header>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.barra-interna</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <header class="barra-interna">
+            <button class="boton-icono" aria-label="Volver"><svg class="icono" aria-hidden="true"><use href="#i-flecha-izq"/></svg></button>
+            <h1 class="titulo-interno">Registrar gasto</h1>
+          </header>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.barra-onboarding</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <header class="barra-onboarding">
+            <span class="logo logo--sm">
+              <svg viewBox="0 0 48 48" aria-hidden="true"><path class="logo__linea" d="M15 32L33 16" stroke-width="3.5" stroke-linecap="round"/><circle class="logo__nodo" cx="15" cy="32" r="5.5"/><circle class="logo__nodo logo__nodo--acento" cx="33" cy="16" r="5.5"/></svg>
+            </span>
+            <span class="logotipo">NEXO</span>
+            <span class="espaciador"></span>
+            <button class="boton boton--texto boton--pequeno">Saltar</button>
+          </header>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.navegacion (ítem activo: navegacion__item--activo)</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <nav class="navegacion" aria-label="Navegación principal">
+            <button class="navegacion__item navegacion__item--activo" aria-current="page">
+              <span class="navegacion__icono"><svg class="icono" aria-hidden="true"><use href="#i-casa"/></svg></span>Inicio
+            </button>
+            <button class="navegacion__item">
+              <span class="navegacion__icono"><svg class="icono" aria-hidden="true"><use href="#i-billetera"/></svg></span>Gastos
+            </button>
+            <button class="navegacion__item">
+              <span class="navegacion__logo">
+                <span class="logo">
+                  <svg viewBox="0 0 48 48" aria-hidden="true"><path class="logo__linea" d="M15 32L33 16" stroke-width="3.5" stroke-linecap="round"/><circle class="logo__nodo" cx="15" cy="32" r="5.5"/><circle class="logo__nodo logo__nodo--acento" cx="33" cy="16" r="5.5"/></svg>
+                </span>
+              </span>Copiloto
+            </button>
+            <button class="navegacion__item">
+              <span class="navegacion__icono"><svg class="icono" aria-hidden="true"><use href="#i-meta"/></svg></span>Metas
+            </button>
+            <button class="navegacion__item">
+              <span class="navegacion__icono"><svg class="icono" aria-hidden="true"><use href="#i-usuario"/></svg></span>Comunidad
+            </button>
+          </nav>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+
+  <!-- ============ LISTAS Y PROGRESO ============ -->
+  <section class="catalogo__seccion" id="listas">
+    <h2 class="titulo-interno">Listas, progreso y racha</h2>
+    <div class="catalogo__lista">
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.lista + .fila-lista (con .icono-recuadro--categoria)</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <div class="tarjeta">
+            <div class="lista">
+              <div class="fila-lista">
+                <span class="icono-recuadro icono-recuadro--categoria icono-recuadro--comida"><svg class="icono" aria-hidden="true"><use href="#i-billetera"/></svg></span>
+                <div class="fila-lista__cuerpo">
+                  <span class="fila-lista__titulo">Almuerzo</span>
+                  <span class="texto-suave texto-pequeno">Comida</span>
+                </div>
+                <span class="fila-lista__importe">$ 15.000</span>
+              </div>
+              <button class="fila-lista fila-lista--boton">
+                <span class="icono-recuadro icono-recuadro--categoria icono-recuadro--transporte"><svg class="icono" aria-hidden="true"><use href="#i-billetera"/></svg></span>
+                <span class="fila-lista__cuerpo">
+                  <span class="fila-lista__titulo">Transmilenio</span>
+                  <span class="texto-suave texto-pequeno">Transporte</span>
+                </span>
+                <span class="fila-lista__importe">$ 3.200</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.icono-recuadro (--pequeno, --acento, categorías)</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <div class="fila fila--ajusta">
+            <span class="icono-recuadro"><svg class="icono" aria-hidden="true"><use href="#i-billetera"/></svg></span>
+            <span class="icono-recuadro icono-recuadro--acento"><svg class="icono" aria-hidden="true"><use href="#i-meta"/></svg></span>
+            <span class="icono-recuadro icono-recuadro--pequeno"><svg class="icono icono--sm" aria-hidden="true"><use href="#i-billetera"/></svg></span>
+            <span class="icono-recuadro icono-recuadro--categoria icono-recuadro--comida"><svg class="icono" aria-hidden="true"><use href="#i-billetera"/></svg></span>
+            <span class="icono-recuadro icono-recuadro--categoria icono-recuadro--transporte"><svg class="icono" aria-hidden="true"><use href="#i-billetera"/></svg></span>
+            <span class="icono-recuadro icono-recuadro--categoria icono-recuadro--salidas"><svg class="icono" aria-hidden="true"><use href="#i-billetera"/></svg></span>
+            <span class="icono-recuadro icono-recuadro--categoria icono-recuadro--compras"><svg class="icono" aria-hidden="true"><use href="#i-billetera"/></svg></span>
+            <span class="icono-recuadro icono-recuadro--categoria icono-recuadro--educacion"><svg class="icono" aria-hidden="true"><use href="#i-billetera"/></svg></span>
+            <span class="icono-recuadro icono-recuadro--categoria icono-recuadro--otro"><svg class="icono" aria-hidden="true"><use href="#i-billetera"/></svg></span>
+          </div>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.barra-progreso (el ancho se pasa con --progreso)</figcaption>
+        <div class="catalogo__demo pila" data-codigo>
+          <div class="barra-progreso" style="--progreso: 45%"><span class="barra-progreso__relleno"></span></div>
+          <div class="barra-progreso" style="--progreso: 90%"><span class="barra-progreso__relleno"></span></div>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.barra-progreso--sobre-oscuro y --excedida</figcaption>
+        <div class="catalogo__demo catalogo__demo--oscuro pila" data-codigo>
+          <div class="barra-progreso barra-progreso--sobre-oscuro" style="--progreso: 40%"><span class="barra-progreso__relleno"></span></div>
+          <div class="barra-progreso barra-progreso--sobre-oscuro barra-progreso--excedida" style="--progreso: 100%"><span class="barra-progreso__relleno"></span></div>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.racha-dias (día --activo y día --hoy)</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <div class="racha-dias">
+            <div class="racha-dias__dia racha-dias__dia--activo"><span class="racha-dias__punto"><svg class="icono icono--sm" aria-hidden="true"><use href="#i-check"/></svg></span>L</div>
+            <div class="racha-dias__dia racha-dias__dia--activo"><span class="racha-dias__punto"><svg class="icono icono--sm" aria-hidden="true"><use href="#i-check"/></svg></span>M</div>
+            <div class="racha-dias__dia racha-dias__dia--activo"><span class="racha-dias__punto"><svg class="icono icono--sm" aria-hidden="true"><use href="#i-check"/></svg></span>M</div>
+            <div class="racha-dias__dia"><span class="racha-dias__punto"></span>J</div>
+            <div class="racha-dias__dia racha-dias__dia--hoy"><span class="racha-dias__punto"></span>V</div>
+            <div class="racha-dias__dia"><span class="racha-dias__punto"></span>S</div>
+            <div class="racha-dias__dia"><span class="racha-dias__punto"></span>D</div>
+          </div>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+
+  <!-- ============ ÍCONOS Y LOGO ============ -->
+  <section class="catalogo__seccion" id="marca">
+    <h2 class="titulo-interno">Íconos y logo</h2>
+    <div class="catalogo__lista">
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.icono (--sm 16, normal 20, --lg 24, --xl 36)</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <div class="fila">
+            <svg class="icono icono--sm" aria-hidden="true"><use href="#i-meta"/></svg>
+            <svg class="icono" aria-hidden="true"><use href="#i-meta"/></svg>
+            <svg class="icono icono--lg" aria-hidden="true"><use href="#i-meta"/></svg>
+            <svg class="icono icono--xl" aria-hidden="true"><use href="#i-meta"/></svg>
+          </div>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.logo (--sm 28, normal 46, --lg 96)</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <div class="fila">
+            <span class="logo logo--sm" role="img" aria-label="NEXO">
+              <svg viewBox="0 0 48 48" aria-hidden="true"><path class="logo__linea" d="M15 32L33 16" stroke-width="3.5" stroke-linecap="round"/><circle class="logo__nodo" cx="15" cy="32" r="5.5"/><circle class="logo__nodo logo__nodo--acento" cx="33" cy="16" r="5.5"/></svg>
+            </span>
+            <span class="logo" role="img" aria-label="NEXO">
+              <svg viewBox="0 0 48 48" aria-hidden="true"><path class="logo__linea" d="M15 32L33 16" stroke-width="3.5" stroke-linecap="round"/><circle class="logo__nodo" cx="15" cy="32" r="5.5"/><circle class="logo__nodo logo__nodo--acento" cx="33" cy="16" r="5.5"/></svg>
+            </span>
+            <span class="logo logo--lg" role="img" aria-label="NEXO">
+              <svg viewBox="0 0 48 48" aria-hidden="true"><path class="logo__linea" d="M15 32L33 16" stroke-width="3.5" stroke-linecap="round"/><circle class="logo__nodo" cx="15" cy="32" r="5.5"/><circle class="logo__nodo logo__nodo--acento" cx="33" cy="16" r="5.5"/></svg>
+            </span>
+          </div>
+        </div>
+      </figure>
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.marca-exito</figcaption>
+        <div class="catalogo__demo" data-codigo>
+          <div class="marca-exito"><svg class="icono icono--xl" aria-hidden="true"><use href="#i-check"/></svg></div>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  /* Este script solo arma el catálogo: lee los valores reales de las variables,
+     comprueba las fuentes y muestra el HTML de cada ejemplo. No es parte de la app. */
+  (function () {
+    var raiz = document.documentElement;
+    var estilos = getComputedStyle(raiz);
+
+    // 1. Colores: nombre de la variable y valor real
+    var grupos = [
+      ['Marca', ['--color-primario', '--color-primario-hover', '--color-secundario', '--color-secundario-hover', '--color-secundario-suave']],
+      ['Azul de NEXO (IA)', ['--color-ia', '--color-ia-suave']],
+      ['Fondos y superficies', ['--color-fondo', '--color-fondo-suave', '--color-superficie']],
+      ['Texto y bordes', ['--color-texto', '--color-texto-suave', '--color-texto-inverso', '--color-borde']],
+      ['Estados', ['--color-exito', '--color-exito-suave', '--color-aviso', '--color-aviso-suave', '--color-error', '--color-error-suave', '--color-error-claro']],
+      ['Sobre fondos oscuros', ['--color-inverso-texto', '--color-inverso-fondo']],
+      ['Categorías de gastos', ['--color-cat-comida', '--color-cat-transporte', '--color-cat-salidas', '--color-cat-compras', '--color-cat-educacion', '--color-cat-otro']]
+    ];
+    var destino = document.getElementById('rejillas-colores');
+    grupos.forEach(function (g) {
+      var caja = document.createElement('div');
+      caja.className = 'catalogo__item';
+      var t = document.createElement('h3');
+      t.className = 'titulo-tarjeta';
+      t.textContent = g[0];
+      var rejilla = document.createElement('div');
+      rejilla.className = 'catalogo__rejilla';
+      g[1].forEach(function (nombre) {
+        var m = document.createElement('div');
+        m.className = 'muestra';
+        var color = document.createElement('div');
+        color.className = 'muestra__color';
+        color.style.background = 'var(' + nombre + ')';
+        var n = document.createElement('span');
+        n.className = 'muestra__nombre';
+        n.textContent = nombre;
+        var v = document.createElement('span');
+        v.className = 'muestra__valor';
+        v.textContent = estilos.getPropertyValue(nombre).trim();
+        m.append(color, n, v);
+        rejilla.appendChild(m);
+      });
+      caja.append(t, rejilla);
+      destino.appendChild(caja);
+    });
+
+    // 2. Escala tipográfica: tamaño real en píxeles
+    document.querySelectorAll('.escala').forEach(function (fila) {
+      var p = fila.querySelector('p');
+      fila.querySelector('.escala__dato').textContent = getComputedStyle(p).fontSize;
+    });
+
+    // 3. Espacios
+    var espacios = document.getElementById('espacios');
+    for (var i = 1; i <= 8; i++) {
+      var nombre = '--espacio-' + i;
+      var f = document.createElement('div');
+      f.className = 'fila';
+      var etiqueta = document.createElement('span');
+      etiqueta.className = 'catalogo__nombre';
+      etiqueta.textContent = nombre + ' · ' + estilos.getPropertyValue(nombre).trim();
+      etiqueta.style.minWidth = '11em';
+      var barra = document.createElement('div');
+      barra.className = 'espacio-barra';
+      barra.style.width = 'var(' + nombre + ')';
+      f.append(etiqueta, barra);
+      espacios.appendChild(f);
+    }
+
+    // 4. Fuentes: ¿cargaron de verdad?
+    document.querySelectorAll('[data-familia]').forEach(function (el) {
+      el.textContent = estilos.getPropertyValue(el.getAttribute('data-familia')).trim();
+    });
+    document.querySelectorAll('[data-fuente]').forEach(function (el) {
+      var texto = el.getAttribute('data-fuente');
+      if (!document.fonts || !document.fonts.load) { el.textContent = 'No se puede comprobar en este navegador'; return; }
+      document.fonts.load(texto).then(function (cargadas) {
+        if (cargadas.length > 0) {
+          el.textContent = '✓ Cargada desde Google Fonts';
+          el.className = 'etiqueta estado-fuente';
+        } else {
+          el.textContent = '✗ No cargó: se ve con Arial';
+          el.className = 'etiqueta etiqueta--oscura estado-fuente';
+        }
+      }, function () {
+        el.textContent = '✗ No cargó: se ve con Arial';
+        el.className = 'etiqueta etiqueta--oscura estado-fuente';
+      });
+    });
+
+    // 5. Fragmento de HTML de cada ejemplo (se copia tal cual del ejemplo en vivo)
+    document.querySelectorAll('[data-codigo]').forEach(function (ejemplo) {
+      var lineas = ejemplo.innerHTML.replace(/^\s*\n/, '').replace(/\s+$/, '').split('\n');
+      var sangria = Math.min.apply(null, lineas.filter(function (l) { return l.trim(); }).map(function (l) { return l.match(/^\s*/)[0].length; }));
+      var texto = lineas.map(function (l) { return l.slice(sangria); }).join('\n');
+      var pre = document.createElement('pre');
+      pre.className = 'catalogo__codigo';
+      var code = document.createElement('code');
+      code.textContent = texto;
+      pre.appendChild(code);
+      ejemplo.parentNode.appendChild(pre);
+    });
+  })();
+</script>
+</body>
+</html>

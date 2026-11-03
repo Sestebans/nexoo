@@ -1,0 +1,169 @@
+/* =========================================================
+   NEXO · Tokens del design kit
+   ---------------------------------------------------------
+   Aquí viven las decisiones base: colores, letras, espacios,
+   bordes y tamaños. Los componentes (components.css) solo
+   usan estas variables: nunca escriben un valor suelto.
+   Para cambiar el aspecto de la app, cambia el valor aquí.
+   ========================================================= */
+
+/* Fuentes: se cargan desde Google Fonts (necesita internet).
+   Si no cargan, el navegador usa la fuente de respaldo (Arial).
+   Este @import debe ir siempre al inicio del archivo. */
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700..800&family=DM+Sans:wght@400;700&display=swap");
+
+:root {
+
+  /* ---------- COLORES ---------- */
+
+  /* Marca: tinta oscura y lima */
+  --color-primario: #14142B;          /* botón principal, texto, tarjeta oscura */
+  --color-primario-hover: #2A2A4A;    /* botón principal al pasar el mouse */
+  --color-secundario: #C9F25C;        /* acento lima: botón secundario, chip activo, racha */
+  --color-secundario-hover: #B8E23F;  /* acento al pasar el mouse */
+  --color-secundario-suave: #F1FAD6;  /* fondo suave del acento (notas de ayuda) */
+
+  /* Azul de NEXO (identidad de la IA) */
+  --color-ia: #3A4BFF;                /* logo, nombre de NEXO, borde de foco */
+  --color-ia-suave: #E8EBFF;          /* fondo suave del azul */
+
+  /* Fondos y superficies */
+  --color-fondo: #F6F2EA;             /* fondo de la app */
+  --color-fondo-suave: #ECE7DB;       /* fondo arena: recuadros, etiquetas suaves */
+  --color-superficie: #FFFFFF;        /* tarjetas, campos, chips */
+
+  /* Texto */
+  --color-texto: #14142B;             /* texto principal */
+  --color-texto-suave: #5B5B73;       /* texto secundario */
+  --color-texto-inverso: #FFFFFF;     /* texto sobre fondos oscuros */
+
+  /* Bordes */
+  --color-borde: #E4DFD3;             /* bordes y separadores */
+
+  /* Estados: éxito, aviso y error */
+  --color-exito: #0B7A55;
+  --color-exito-suave: #DDF1E8;
+  --color-aviso: #8A5600;
+  --color-aviso-suave: #FBEBCB;
+  --color-error: #C73B3F;
+  --color-error-suave: #FBE3E3;
+  --color-error-claro: #FF8A8E;       /* error sobre fondo oscuro */
+
+  /* Sobre fondos oscuros (blancos con transparencia) */
+  --color-inverso-texto: #FFFFFFC7;   /* texto secundario sobre oscuro */
+  --color-inverso-fondo: #FFFFFF2E;   /* fondos y pistas sobre oscuro */
+
+  /* Categorías de gastos */
+  --color-cat-comida: #C2561C;
+  --color-cat-transporte: #1F6FC2;
+  --color-cat-salidas: #7A3FC4;
+  --color-cat-compras: #C22A66;
+  --color-cat-educacion: #12795F;
+  --color-cat-otro: var(--color-texto-suave);
+  --mezcla-categoria: 14%;            /* cuánto color lleva el fondo del ícono */
+
+
+  /* ---------- TIPOGRAFÍA ---------- */
+
+  /* Familias (siempre terminan en una fuente de respaldo) */
+  --fuente-titulos: "Bricolage Grotesque", Arial, sans-serif;
+  --fuente-texto: "DM Sans", Arial, sans-serif;
+
+  /* Escala de tamaños (1rem = 16 px) */
+  --texto-xs: 0.75rem;                /* 12 px: etiquetas pequeñas */
+  --texto-sm: 0.875rem;               /* 14 px: texto pequeño */
+  --texto-base: 1rem;                 /* 16 px: texto normal */
+  --texto-lg: 1.125rem;               /* 18 px: subtítulos y títulos de tarjeta */
+  --texto-xl: 1.375rem;               /* 22 px: títulos de pantallas internas */
+  --texto-2xl: 1.875rem;              /* 30 px: títulos de pantalla */
+
+  /* Cifras de dinero (se achican en pantallas muy angostas) */
+  --texto-cifra-m: 2rem;              /* 32 px */
+  --texto-cifra-l: min(2.75rem, 12vw);   /* 44 px */
+  --texto-cifra-xl: min(3.25rem, 12vw);  /* 52 px */
+
+  /* Pesos */
+  --peso-normal: 400;
+  --peso-fuerte: 700;
+  --peso-cifra: 800;                  /* solo cifras y logotipo (fuente de títulos) */
+
+  /* Altura de línea y espacio entre letras */
+  --linea-titulo: 1.1;
+  --linea-texto: 1.45;
+  --letras-cifra: -0.04em;
+  --letras-titulo: -0.025em;
+  --letras-mayuscula: 0.04em;
+
+
+  /* ---------- ESPACIOS (múltiplos de 4 px) ---------- */
+  --espacio-1: 4px;
+  --espacio-2: 8px;
+  --espacio-3: 12px;
+  --espacio-4: 16px;
+  --espacio-5: 20px;
+  --espacio-6: 24px;
+  --espacio-7: 28px;
+  --espacio-8: 32px;
+
+
+  /* ---------- BORDES Y SOMBRAS ---------- */
+
+  /* Esquinas redondeadas */
+  --radio-sm: 8px;
+  --radio-md: 12px;
+  --radio-lg: 16px;
+  --radio-xl: 20px;                   /* tarjetas */
+  --radio-total: 999px;               /* círculos y pastillas */
+
+  /* Grosores */
+  --borde-fino: 1px;                  /* contenedores */
+  --borde-grueso: 2px;                /* controles */
+  --borde-foco: 3px;                  /* línea del foco de teclado */
+  --foco-separacion: 2px;
+
+  /* Sombras: el diseño es plano, solo hay anillos sin desenfoque */
+  --sombra-suave: 0 0 0 var(--borde-fino) var(--color-borde);
+  --sombra-media: 0 0 0 var(--espacio-1) var(--color-fondo);
+
+
+  /* ---------- TAMAÑOS ---------- */
+
+  /* Alturas de controles (botones, campos, chips) */
+  --alto-control-xs: 32px;
+  --alto-control-sm: 36px;
+  --alto-control-md: 44px;
+  --alto-control-lg: 52px;
+  --alto-barra: 10px;                 /* barra de progreso */
+  --alto-campo-area: 120px;           /* campo de texto largo */
+
+  /* Íconos */
+  --icono-sm: 16px;
+  --icono-md: 20px;
+  --icono-lg: 24px;
+  --icono-xl: 36px;
+  --trazo-icono: 2;
+
+  /* Logo y racha */
+  --logo-sm: 28px;
+  --logo-md: 46px;
+  --logo-lg: 96px;
+  --tamano-punto-racha: 26px;
+
+  /* Anchos */
+  --ancho-app: 480px;                 /* ancho máximo de la app */
+  --ancho-minimo: 320px;
+  --ancho-burbuja-usuario: 86%;
+  --ancho-burbuja-nexo: 94%;
+  --ancho-aviso: 420px;
+
+
+  /* ---------- MOVIMIENTO Y ESTADOS ---------- */
+  --duracion-barra: 0.3s;
+  --duracion-boton: 0.12s;
+  --escala-presion: 0.98;             /* el botón se achica un poco al tocarlo */
+  --opacidad-deshabilitado: 0.55;
+  --opacidad-bloqueado: 0.72;
+}
+
+/* Nota: el punto de quiebre para pantallas anchas es 520 px
+   (las variables no funcionan dentro de @media, por eso se escribe aquí). */
