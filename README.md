@@ -18,7 +18,7 @@ Jóvenes de 18 a 25 años con ingresos propios que quieren entender las finanzas
 ## Links
 
 - Brief y benchmark: [docs/brief.pdf](docs/brief.pdf)
-- App publicada: pendiente
+- App publicada: http://nexoo-sooty.vercel.app/
 
 ## Cómo está organizado este repo
 
