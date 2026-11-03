@@ -17,6 +17,8 @@ NEXO: copiloto financiero que ayuda a entender y manejar el dinero con respuesta
 
 - disenos/: diseños originales. Solo de referencia: nunca los modifiques.
 - assets/: todas las imágenes, logos e íconos de la app. Usa siempre las de aquí, nunca links de imágenes de internet.
+- assets/fuentes/: las fuentes (Bricolage Grotesque y DM Sans) en .woff2. Se cargan desde tokens.css, sin internet.
+- docs/: documentos del proyecto, como el brief y el benchmark (brief.pdf).
 - css/: estilos. tokens.css (decisiones base), components.css (componentes) y styles.css (estilos generales de las pantallas).
 - js/: código. app.js (comportamiento) y data.js (datos simulados, separados del diseño).
 - index.html: la pantalla de inicio, la puerta de entrada de la app. Las demás pantallas van en la carpeta pages/.

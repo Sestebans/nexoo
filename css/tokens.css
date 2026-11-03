@@ -7,10 +7,24 @@
    Para cambiar el aspecto de la app, cambia el valor aquí.
    ========================================================= */
 
-/* Fuentes: se cargan desde Google Fonts (necesita internet).
-   Si no cargan, el navegador usa la fuente de respaldo (Arial).
-   Este @import debe ir siempre al inicio del archivo. */
-@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700..800&family=DM+Sans:wght@400;700&display=swap");
+/* Fuentes: viven en assets/fuentes/ y se cargan desde el proyecto
+   (no necesitan internet). Cada archivo trae todos los pesos que
+   usamos. Las rutas son relativas a este archivo (css/).
+   Si no cargan, el navegador usa la fuente de respaldo (Arial). */
+@font-face {
+  font-family: "Bricolage Grotesque";
+  font-style: normal;
+  font-weight: 700 800;
+  font-display: swap;
+  src: url("../assets/fuentes/bricolage-grotesque-latin.woff2") format("woff2");
+}
+@font-face {
+  font-family: "DM Sans";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("../assets/fuentes/dm-sans-latin.woff2") format("woff2");
+}
 
 :root {
 

@@ -17,12 +17,14 @@ Jóvenes de 18 a 25 años con ingresos propios que quieren entender las finanzas
 
 ## Links
 
+- Brief y benchmark: [docs/brief.pdf](docs/brief.pdf)
 - App publicada: pendiente
 
 ## Cómo está organizado este repo
 
 - `disenos/`: el prototipo de la app (`prototipo.html`), que se abre en el navegador.
-- `assets/`: las imágenes de la app. Hoy no tiene imágenes, porque el prototipo dibuja sus gráficos con código.
+- `assets/`: las imágenes de la app. Hoy no tiene imágenes, porque el prototipo dibuja sus gráficos con código. En `assets/fuentes/` están las dos fuentes (Bricolage Grotesque y DM Sans), para que la app no dependa de internet.
+- `docs/`: documentos del proyecto: el brief y el benchmark (`brief.pdf`).
 - `css/`: los estilos del design kit. `tokens.css` tiene los colores, letras y medidas, y `components.css` tiene los botones, tarjetas, campos y demás piezas.
 - `componentes.html`: el catálogo con todas las piezas del design kit. Se abre con doble clic en el navegador.
 - `spec.md`: el plano de la app: el flujo de pantallas, los datos y, para cada pantalla, qué hace y cuándo está lista.

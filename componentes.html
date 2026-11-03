@@ -100,7 +100,7 @@
   <!-- ============ FUENTES ============ -->
   <section class="catalogo__seccion" id="fuentes">
     <h2 class="titulo-interno">Fuentes y cómo comprobarlas</h2>
-    <p class="texto-suave">Las dos fuentes se cargan desde <strong>Google Fonts</strong> con el <code>@import</code> al inicio de <code>tokens.css</code>. Necesitan internet. Si no cargan, el navegador usa Arial. Cada tarjeta dice si la fuente cargó de verdad.</p>
+    <p class="texto-suave">Las dos fuentes viven en <strong>assets/fuentes/</strong> y se cargan con <code>@font-face</code> al inicio de <code>tokens.css</code>. No necesitan internet. Si no cargan, el navegador usa Arial. Cada tarjeta dice si la fuente cargó de verdad.</p>
 
     <div class="catalogo__lista">
       <div class="catalogo__item">
@@ -816,7 +816,7 @@
       if (!document.fonts || !document.fonts.load) { el.textContent = 'No se puede comprobar en este navegador'; return; }
       document.fonts.load(texto).then(function (cargadas) {
         if (cargadas.length > 0) {
-          el.textContent = '✓ Cargada desde Google Fonts';
+          el.textContent = '✓ Cargada desde assets/fuentes/';
           el.className = 'etiqueta estado-fuente';
         } else {
           el.textContent = '✗ No cargó: se ve con Arial';
