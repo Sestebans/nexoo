@@ -25,9 +25,9 @@ El mapa de avance de la app: una fila por pantalla del `spec.md`, agrupadas por 
 
 | Pantalla | Archivo | Separada | Con kit | Datos en data.js | Revisada vs spec |
 |---|---|---|---|---|---|
-| F1.4 Registrar gasto | `pages/registrar-gasto.html` | ✅ | ⬜ | ⬜ | ⬜ |
-| F1.4b Error de registro | `pages/registrar-gasto.html#error` | ✅ | ⬜ | ⬜ | ⬜ |
-| F1.5 Gasto guardado y racha | `pages/registrar-gasto.html#guardado` | ✅ | ⬜ | ⬜ | ⬜ |
+| F1.4 Registrar gasto | `pages/registrar-gasto.html` | ✅ | ✅ | ✅ | ✅ |
+| F1.4b Error de registro | `pages/registrar-gasto.html#error` | ✅ | ✅ | ✅ | ✅ |
+| F1.5 Gasto guardado y racha | `pages/registrar-gasto.html#guardado` | ✅ | ✅ | ✅ | ✅ |
 
 ## Tramo 3 · Copiloto IA
 

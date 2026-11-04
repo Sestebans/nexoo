@@ -51,6 +51,22 @@ const DATOS = {
     { id: 6, nombre: "Otro" }
   ],
 
+  /* Cuándo fue el gasto (spec.md, Gastos > día: Hoy o Ayer) */
+  cuando: [
+    { id: "hoy", nombre: "Hoy" },
+    { id: "ayer", nombre: "Ayer" }
+  ],
+
+  /* Catálogo de recompensas por días de racha (spec.md, Recompensas > catálogo) */
+  recompensas: [
+    { id: 1, dias: 3, titulo: "Consejo personalizado" },
+    { id: 2, dias: 7, titulo: "3 días de NEXO Pro" },
+    { id: 3, dias: 14, titulo: "7 días de NEXO Pro" }
+  ],
+
+  /* Recompensas que ya canjeó (spec.md, Recompensas > canjeadas). Empieza vacía. */
+  canjeadas: [],
+
   /* Textos de los botones "?" de Inicio. Esta lista no está en spec.md. */
   ayudas: [
     {

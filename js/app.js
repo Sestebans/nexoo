@@ -252,6 +252,8 @@ var ICONOS = {
   otro: '<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>',
   meta: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
   check: '<path d="M20 6 9 17l-5-5"/>',
+  alerta: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  circuloCheck: '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
   flechaDer: '<path d="m9 18 6-6-6-6"/>'
 };
 
@@ -297,6 +299,40 @@ function claveDia(fecha) {
 function diaHaceN(hoy, n) {
   var fecha = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() - n);
   return { fecha: fecha, clave: claveDia(fecha) };
+}
+
+
+/* ---------- Racha (la usan Inicio y Registrar gasto) ---------- */
+
+/* Días seguidos con al menos un gasto, y los últimos 7 días marcados.
+   Si hoy todavía no hay gasto, la racha se cuenta desde ayer. */
+function calcularRacha(gastos, hoy) {
+  var diasConGasto = {};
+  gastos.forEach(function (g) { diasConGasto[g.dia] = true; });
+  var racha = 0;
+  var desde = diasConGasto[diaHaceN(hoy, 0).clave] ? 0 : 1;
+  while (diasConGasto[diaHaceN(hoy, desde + racha).clave]) racha += 1;
+
+  var letras = ["D", "L", "M", "M", "J", "V", "S"];
+  var semana = [];
+  for (var i = 6; i >= 0; i--) {
+    var dia = diaHaceN(hoy, i);
+    semana.push({ letra: letras[dia.fecha.getDay()], activo: !!diasConGasto[dia.clave], hoy: i === 0 });
+  }
+  return { racha: racha, semana: semana };
+}
+
+/* Dibuja los 7 días de la racha dentro de un .racha-dias */
+function pintarSemana(contenedor, semana) {
+  contenedor.replaceChildren();
+  semana.forEach(function (d) {
+    var celda = crearElemento("div", "racha-dias__dia" + (d.activo ? " racha-dias__dia--activo" : "") + (d.hoy ? " racha-dias__dia--hoy" : ""));
+    var punto = crearElemento("span", "racha-dias__punto");
+    if (d.activo) punto.appendChild(crearIcono("check", "icono--sm"));
+    celda.appendChild(punto);
+    celda.appendChild(document.createTextNode(d.letra));
+    contenedor.appendChild(celda);
+  });
 }
 
 
@@ -386,27 +422,10 @@ function pantallaInicio() {
   document.getElementById("enlace-avisos").setAttribute("aria-label", sinVer ? "Avisos, " + sinVer + " nuevos" : "Avisos");
 
   /* --- Racha: días seguidos con al menos un gasto --- */
-  var diasConGasto = {};
-  gastos.forEach(function (g) { diasConGasto[g.dia] = true; });
-  var racha = 0;
-  var desde = diasConGasto[diaHaceN(hoy, 0).clave] ? 0 : 1;   /* si hoy aún no registra, cuenta desde ayer */
-  while (diasConGasto[diaHaceN(hoy, desde + racha).clave]) racha += 1;
-
-  document.getElementById("racha-chip").textContent = racha;
-  document.getElementById("racha-titulo").textContent = racha + (racha === 1 ? " día" : " días") + " de racha";
-
-  var letras = ["D", "L", "M", "M", "J", "V", "S"];
-  var contenedorRacha = document.getElementById("racha-dias");
-  for (var i = 6; i >= 0; i--) {
-    var dia = diaHaceN(hoy, i);
-    var activo = !!diasConGasto[dia.clave];
-    var celda = crearElemento("div", "racha-dias__dia" + (activo ? " racha-dias__dia--activo" : "") + (i === 0 ? " racha-dias__dia--hoy" : ""));
-    var punto = crearElemento("span", "racha-dias__punto");
-    if (activo) punto.appendChild(crearIcono("check", "icono--sm"));
-    celda.appendChild(punto);
-    celda.appendChild(document.createTextNode(letras[dia.fecha.getDay()]));
-    contenedorRacha.appendChild(celda);
-  }
+  var datosRacha = calcularRacha(gastos, hoy);
+  document.getElementById("racha-chip").textContent = datosRacha.racha;
+  document.getElementById("racha-titulo").textContent = datosRacha.racha + (datosRacha.racha === 1 ? " día" : " días") + " de racha";
+  pintarSemana(document.getElementById("racha-dias"), datosRacha.semana);
 
   /* --- Mensaje de NEXO (se calcula con los números, no usa la IA) --- */
   var mensaje = document.getElementById("mensaje-nexo");
@@ -486,11 +505,387 @@ function pantallaInicio() {
 }
 
 
+/* ---------- Dictado: entender una frase como "gasté 15 mil en almuerzo" ---------- */
+
+var NUMEROS_EN_PALABRAS = { un: 1, una: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6, siete: 7, ocho: 8, nueve: 9, diez: 10, quince: 15, veinte: 20, treinta: 30, cuarenta: 40, cincuenta: 50 };
+var MULTIPLICADORES = { mil: 1e3, luca: 1e3, lucas: 1e3, k: 1e3, millon: 1e6, "millón": 1e6, millones: 1e6, palo: 1e6, palos: 1e6 };
+
+/* Palabras que delatan la categoría (si ninguna aparece, es "Otro") */
+var PALABRAS_CATEGORIA = [
+  ["Comida", /almuerzo|comida|desayuno|cena|restaurante|mercado|caf[eé]|pizza|hamburguesa|domicilio|empanada|snack|jugo|helado|tienda/],
+  ["Transporte", /transporte|bus|taxi|uber|didi|transmilenio|gasolina|metro|pasaje|moto|peaje|parqueadero|sitp/],
+  ["Salidas", /salidas?|cine|fiesta|cerveza|trago|concierto|salida|discoteca|bar\b|rumba|paseo/],
+  ["Compras", /compras?\b|ropa|zapatos|tenis|compr[eé]|camiseta|regalo|maquillaje|aud[ií]fonos/],
+  ["Educación", /educaci[oó]n|libro|matr[ií]cula|curso|universidad|fotocopias|semestre|taller/]
+];
+
+/* Busca el monto en la frase: "15 mil", "$ 8.500", "dos lucas", "1,5 millones"... */
+function leerMontoDeFrase(texto) {
+  var limpio = texto.replace(/\$/g, " ");
+  while (/(\d)[.,](\d{3})(?!\d)/.test(limpio)) limpio = limpio.replace(/(\d)[.,](\d{3})(?!\d)/g, "$1$2");
+  var encontrado = limpio.match(/(\d+(?:[.,]\d+)?)\s*(millones|mill[oó]n|mil|lucas?|k|palos?)?(?![a-záéíóúA-ZÁÉÍÓÚ])/i);
+  if (encontrado) {
+    var valor = parseFloat(encontrado[1].replace(",", "."));
+    var factor = encontrado[2] ? MULTIPLICADORES[encontrado[2].toLowerCase()] : 1;
+    return { monto: Math.round(valor * factor), encontrado: encontrado[0], limpio: limpio };
+  }
+  encontrado = limpio.match(/\b(un|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|quince|veinte|treinta|cuarenta|cincuenta)\s+(millones|mill[oó]n|mil|lucas?|palos?)\b/i);
+  if (encontrado) {
+    return { monto: NUMEROS_EN_PALABRAS[encontrado[1].toLowerCase()] * MULTIPLICADORES[encontrado[2].toLowerCase()], encontrado: encontrado[0], limpio: limpio };
+  }
+  return { monto: null, encontrado: "", limpio: limpio };
+}
+
+/* Frase -> { monto, categoria, nota, cuando }. Si no hay monto, "monto" es null. */
+function entenderFrase(texto) {
+  var frase = String(texto || "").trim();
+  var cuando = /\bayer\b/i.test(frase) ? "ayer" : "hoy";
+  var sinDia = frase.replace(/\b(ayer|hoy)\b/gi, " ").replace(/\s+/g, " ").trim();
+  var lectura = leerMontoDeFrase(sinDia);
+
+  var categoria = "Otro";
+  for (var i = 0; i < PALABRAS_CATEGORIA.length; i++) {
+    if (PALABRAS_CATEGORIA[i][1].test(sinDia.toLowerCase())) { categoria = PALABRAS_CATEGORIA[i][0]; break; }
+  }
+
+  var nota = lectura.encontrado ? lectura.limpio.replace(lectura.encontrado, " ") : lectura.limpio;
+  nota = nota.replace(/\s+/g, " ").trim();
+  var anterior;
+  do {
+    anterior = nota;
+    nota = nota.replace(/^(gast[eé]|pagu[eé]|compr[eé]|me cost[oó]|fueron|fue|son|en|de|por|para|pesos|el|la|un|una)\s+/i, "").replace(/[,.]+$/, "").trim();
+  } while (nota !== anterior);
+  nota = nota ? nota.charAt(0).toUpperCase() + nota.slice(1) : "";
+
+  return { monto: lectura.monto, categoria: categoria, nota: nota, cuando: cuando };
+}
+
+
+/* ---------- Pantalla: pages/registrar-gasto.html (F1.4, F1.4b y F1.5) ---------- */
+
+function pantallaRegistrarGasto() {
+  var categorias = obtenerDatos("categorias");
+  var opcionesCuando = obtenerDatos("cuando");
+
+  var pasoFormulario = document.getElementById("paso-formulario");
+  var pasoGuardado = document.getElementById("paso-guardado");
+  var campoMonto = document.getElementById("campo-monto");
+  var contenedorMonto = document.getElementById("contenedor-monto");
+  var campoNota = document.getElementById("campo-nota");
+  var errorCategoria = document.getElementById("error-categoria");
+  var alertaMonto = document.getElementById("alerta-monto");
+  var chipsCategoria = document.getElementById("chips-categoria");
+  var chipsCuando = document.getElementById("chips-cuando");
+  var chipsRecientes = document.getElementById("chips-recientes");
+  var confirmar = document.getElementById("confirmar-monto");
+  var botonGrabar = document.getElementById("boton-grabar");
+  var textoGrabar = document.getElementById("boton-grabar-texto");
+  var ayudaVoz = document.getElementById("ayuda-voz");
+  var avisoDictado = document.getElementById("aviso-dictado");
+
+  var categoria = "";
+  var cuando = "hoy";
+  var gastoPendiente = null;     /* gasto que espera el "¿Está bien?" */
+
+  /* --- Chips de categoría y de cuándo --- */
+  function marcarUno(contenedor, valor) {
+    Array.prototype.forEach.call(contenedor.children, function (chip) {
+      marcarChip(chip, chip.getAttribute("data-valor") === valor);
+    });
+  }
+  function elegirCategoria(nombre) {
+    categoria = nombre;
+    marcarUno(chipsCategoria, nombre);
+    if (nombre) errorCategoria.hidden = true;
+  }
+  function elegirCuando(id) {
+    cuando = id;
+    marcarUno(chipsCuando, id);
+  }
+
+  categorias.forEach(function (c) {
+    var estilo = ESTILO_CATEGORIA[c.nombre] || ESTILO_CATEGORIA["Otro"];
+    var chip = crearElemento("button", "chip");
+    chip.type = "button";
+    chip.setAttribute("data-valor", c.nombre);
+    chip.appendChild(crearIcono(estilo.icono, "icono--sm"));
+    chip.appendChild(document.createTextNode(c.nombre));
+    marcarChip(chip, false);
+    chip.addEventListener("click", function () { elegirCategoria(c.nombre); });
+    chipsCategoria.appendChild(chip);
+  });
+
+  opcionesCuando.forEach(function (o) {
+    var chip = crearElemento("button", "chip", o.nombre);
+    chip.type = "button";
+    chip.setAttribute("data-valor", o.id);
+    chip.addEventListener("click", function () { elegirCuando(o.id); });
+    chipsCuando.appendChild(chip);
+  });
+  elegirCuando("hoy");
+
+  /* --- Repetir uno reciente: hasta 3 gastos distintos, el más nuevo primero --- */
+  var vistos = {};
+  var recientes = [];
+  obtenerDatos("gastos").slice().sort(function (a, b) {
+    return (b.dia + b.creado).localeCompare(a.dia + a.creado);
+  }).forEach(function (g) {
+    var clave = g.nota + "|" + g.monto + "|" + g.categoria;
+    if (recientes.length < 3 && !vistos[clave]) { vistos[clave] = true; recientes.push(g); }
+  });
+  document.getElementById("grupo-recientes").hidden = recientes.length === 0;
+  recientes.forEach(function (g) {
+    var estilo = ESTILO_CATEGORIA[g.categoria] || ESTILO_CATEGORIA["Otro"];
+    var chip = crearElemento("button", "chip");
+    chip.type = "button";
+    chip.appendChild(crearIcono(estilo.icono, "icono--sm"));
+    chip.appendChild(document.createTextNode(g.nota + " · " + pesos(g.monto)));
+    marcarChip(chip, false);
+    chip.addEventListener("click", function () {
+      Array.prototype.forEach.call(chipsRecientes.children, function (otro) { marcarChip(otro, otro === chip); });
+      campoMonto.value = conPuntos(String(g.monto));
+      campoNota.value = g.nota;
+      elegirCategoria(g.categoria);
+      elegirCuando("hoy");
+      mostrarErrorMonto(false);
+    });
+    chipsRecientes.appendChild(chip);
+  });
+
+  /* --- Monto con puntos: 15.000 --- */
+  campoMonto.addEventListener("input", function () {
+    var numeros = soloNumeros(campoMonto.value);
+    campoMonto.value = numeros ? conPuntos(numeros) : "";
+    if (Number(numeros) > 0) mostrarErrorMonto(false);
+  });
+
+  function montoEscrito() { return Number(soloNumeros(campoMonto.value)); }
+
+  function mostrarErrorMonto(hay) {
+    contenedorMonto.classList.toggle("campo-monto--error", hay);
+    campoMonto.setAttribute("aria-invalid", hay ? "true" : "false");
+    if (hay) campoMonto.setAttribute("aria-describedby", "alerta-monto");
+    else campoMonto.removeAttribute("aria-describedby");
+    alertaMonto.hidden = !hay;
+  }
+
+  function ocultarConfirmacion() {
+    confirmar.hidden = true;
+    gastoPendiente = null;
+  }
+
+  /* --- Escribir y grabar audio --- */
+  document.getElementById("boton-escribir").addEventListener("click", function () { campoMonto.focus(); });
+
+  function avisarDictado(tipo, texto) {
+    avisoDictado.className = "alerta alerta--" + tipo;
+    document.getElementById("aviso-dictado-icono").replaceChildren(crearIcono(tipo === "exito" ? "circuloCheck" : "alerta"));
+    document.getElementById("aviso-dictado-texto").textContent = texto;
+    avisoDictado.hidden = false;
+  }
+
+  /* Pone en el formulario lo que se entendió de la frase dictada */
+  function aplicarFrase(frase) {
+    var entendido = entenderFrase(frase);
+    if (!entendido.monto) {
+      avisarDictado("aviso", 'No pude entender el monto. Prueba con "gasté 15 mil en almuerzo" o escríbelo abajo.');
+      return;
+    }
+    campoMonto.value = conPuntos(String(entendido.monto));
+    campoNota.value = entendido.nota;
+    elegirCategoria(entendido.categoria);
+    elegirCuando(entendido.cuando);
+    mostrarErrorMonto(false);
+    ocultarConfirmacion();
+    avisarDictado("exito", 'Entendí: "' + frase + '". Revisa los datos de abajo y guarda.');
+  }
+
+  var reconocimiento = null;
+  var escuchando = false;
+
+  function pintarGrabar() {
+    botonGrabar.classList.toggle("boton-modo--principal", !escuchando);
+    botonGrabar.classList.toggle("boton-modo--grabando", escuchando);
+    textoGrabar.textContent = escuchando ? "Te escucho… toca para parar" : "Grabar audio";
+    ayudaVoz.hidden = escuchando;
+  }
+
+  /* El navegador decide si hay dictado: se mira al tocar el botón */
+  function hayDictado() { return window.SpeechRecognition || window.webkitSpeechRecognition; }
+
+  if (!hayDictado()) {
+    botonGrabar.hidden = true;
+    ayudaVoz.hidden = true;
+    avisarDictado("aviso", "Tu navegador no permite dictado por voz. Escribe el gasto abajo.");
+  }
+
+  botonGrabar.addEventListener("click", function () {
+    var Reconocedor = hayDictado();
+    if (!Reconocedor) return;
+    if (escuchando) { reconocimiento.stop(); return; }
+    reconocimiento = new Reconocedor();
+    reconocimiento.lang = "es-CO";
+    reconocimiento.interimResults = false;
+    reconocimiento.maxAlternatives = 1;
+    reconocimiento.onresult = function (e) { aplicarFrase(e.results[0][0].transcript); };
+    reconocimiento.onerror = function () {
+      escuchando = false;
+      pintarGrabar();
+      avisarDictado("aviso", "No pude escucharte. Revisa el permiso del micrófono o escríbelo abajo.");
+    };
+    reconocimiento.onend = function () { escuchando = false; pintarGrabar(); };
+    avisoDictado.hidden = true;
+    escuchando = true;
+    pintarGrabar();
+    reconocimiento.start();
+  });
+
+  /* --- Guardar --- */
+  function validar() {
+    var sinMonto = montoEscrito() <= 0;
+    var sinCategoria = !categoria;
+    mostrarErrorMonto(sinMonto);
+    errorCategoria.hidden = !sinCategoria;
+    if (sinMonto) campoMonto.focus();
+    return !sinMonto && !sinCategoria;
+  }
+
+  function etiquetaDia(clave) {
+    var hoy = new Date();
+    if (clave === diaHaceN(hoy, 0).clave) return "Hoy";
+    if (clave === diaHaceN(hoy, 1).clave) return "Ayer";
+    return clave;
+  }
+
+  function guardarGasto(gasto) {
+    var gastos = obtenerDatos("gastos");
+    gasto.id = gastos.reduce(function (mayor, g) { return Math.max(mayor, g.id); }, 0) + 1;
+    gastos.push(gasto);
+    guardarDatos("gastos", gastos);
+    window.history.replaceState(null, "", "#guardado");
+    mostrarGuardado(gasto);
+  }
+
+  pasoFormulario.addEventListener("submit", function (e) {
+    e.preventDefault();
+    ocultarConfirmacion();
+    if (!validar()) return;
+    var hoy = new Date();
+    var gasto = {
+      nota: campoNota.value.trim() || categoria,
+      monto: montoEscrito(),
+      categoria: categoria,
+      dia: diaHaceN(hoy, cuando === "ayer" ? 1 : 0).clave,
+      creado: hoy.toISOString()
+    };
+    var ingreso = obtenerDatos("perfil")[0].ingresoMensual;
+    if (ingreso > 0 && gasto.monto > ingreso) {
+      gastoPendiente = gasto;
+      document.getElementById("confirmar-texto").textContent = "Escribiste " + pesos(gasto.monto) + " y tus ingresos son " + pesos(ingreso) + ". ¿Está bien?";
+      confirmar.hidden = false;
+      confirmar.scrollIntoView({ block: "center" });
+      return;
+    }
+    guardarGasto(gasto);
+  });
+
+  document.getElementById("boton-corregir").addEventListener("click", function () {
+    ocultarConfirmacion();
+    campoMonto.focus();
+  });
+  document.getElementById("boton-confirmar").addEventListener("click", function () {
+    var gasto = gastoPendiente;
+    ocultarConfirmacion();
+    if (gasto) guardarGasto(gasto);
+  });
+
+  /* --- Gasto guardado y racha (F1.5) --- */
+  function mostrarFormulario() {
+    pasoGuardado.hidden = true;
+    pasoFormulario.hidden = false;
+    window.scrollTo(0, 0);
+  }
+
+  function mostrarGuardado(gasto) {
+    var hoy = new Date();
+    var todos = obtenerDatos("gastos");
+    var despues = calcularRacha(todos, hoy);
+    var antes = calcularRacha(todos.filter(function (g) { return g.id !== gasto.id; }), hoy);
+
+    var estilo = ESTILO_CATEGORIA[gasto.categoria] || ESTILO_CATEGORIA["Otro"];
+    var resumen = document.getElementById("resumen-gasto");
+    var icono = crearElemento("span", "icono-recuadro icono-recuadro--categoria icono-recuadro--" + estilo.clase);
+    icono.appendChild(crearIcono(estilo.icono));
+    var cuerpo = crearElemento("span", "fila-lista__cuerpo");
+    cuerpo.appendChild(crearElemento("span", "fila-lista__titulo", gasto.nota));
+    cuerpo.appendChild(crearElemento("span", "texto-suave texto-pequeno", gasto.categoria + " · " + etiquetaDia(gasto.dia)));
+    resumen.replaceChildren(icono, cuerpo, crearElemento("span", "fila-lista__importe", pesos(gasto.monto)));
+
+    document.getElementById("racha-titulo").textContent = "Racha actual: " + despues.racha + (despues.racha === 1 ? " día" : " días");
+    pintarSemana(document.getElementById("racha-dias"), despues.semana);
+
+    /* Recompensas que este gasto acaba de desbloquear (y que no se han canjeado) */
+    var canjeadas = obtenerDatos("canjeadas").map(function (c) { return c.recompensaId; });
+    var nuevas = obtenerDatos("recompensas").filter(function (r) {
+      return r.dias > antes.racha && r.dias <= despues.racha && canjeadas.indexOf(r.id) === -1;
+    });
+    var zona = document.getElementById("recompensas-nuevas");
+    zona.replaceChildren();
+    nuevas.forEach(function (r) {
+      var alerta = crearElemento("div", "alerta alerta--exito");
+      alerta.setAttribute("role", "status");
+      alerta.appendChild(crearIcono("circuloCheck"));
+      alerta.appendChild(crearElemento("span", "", "Desbloqueaste una recompensa: " + r.titulo + "."));
+      zona.appendChild(alerta);
+    });
+    document.getElementById("boton-recompensa").hidden = nuevas.length === 0;
+
+    document.getElementById("boton-deshacer").onclick = function () {
+      guardarDatos("gastos", obtenerDatos("gastos").filter(function (g) { return g.id !== gasto.id; }));
+      window.history.replaceState(null, "", window.location.pathname);
+      mostrarFormulario();
+      var aviso = document.getElementById("aviso-deshecho");
+      aviso.hidden = false;
+      window.setTimeout(function () { aviso.hidden = true; }, 4000);
+    };
+
+    pasoFormulario.hidden = true;
+    pasoGuardado.hidden = false;
+    window.scrollTo(0, 0);
+  }
+
+  document.getElementById("boton-otro").addEventListener("click", function () {
+    campoMonto.value = "";
+    campoNota.value = "";
+    elegirCategoria("");
+    elegirCuando("hoy");
+    mostrarErrorMonto(false);
+    errorCategoria.hidden = true;
+    avisoDictado.hidden = true;
+    window.history.replaceState(null, "", window.location.pathname);
+    mostrarFormulario();
+    campoMonto.focus();
+  });
+
+  /* Al abrir: registrar-gasto.html#error muestra los errores y #guardado el último gasto */
+  var pedido = window.location.hash.replace("#", "");
+  if (pedido === "error") {
+    validar();
+  } else if (pedido === "guardado") {
+    var ultimo = obtenerDatos("gastos").slice().sort(function (a, b) {
+      return (b.dia + b.creado).localeCompare(a.dia + a.creado);
+    })[0];
+    if (ultimo) mostrarGuardado(ultimo);
+  }
+}
+
+
 /* ---------- Arranque: cada página ejecuta solo la función de su pantalla ---------- */
 
 var PANTALLAS = {
   "index": pantallaIndex,
-  "inicio": pantallaInicio
+  "inicio": pantallaInicio,
+  "registrar-gasto": pantallaRegistrarGasto
 };
 
 document.addEventListener("DOMContentLoaded", function () {
