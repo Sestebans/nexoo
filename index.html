@@ -1,21 +1,100 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta name="theme-color" content="#F6F2EA" />
-<meta name="description" content="NEXO: tu dinero, pero con alguien de tu lado." />
-<title>NEXO · Tu copiloto financiero</title>
-<link rel="stylesheet" href="css/prototipo.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#F6F2EA">
+  <meta name="description" content="NEXO: tu dinero, pero con alguien de tu lado.">
+  <title>NEXO · Tu copiloto financiero</title>
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
-<body data-pagina="index">
-<div id="root">
-<div data-estado="b1"><div class="app-shell"><div class="onb"><div class="onb-top"><span class="mark small" role="img" aria-label="NEXO"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M15 32L33 16" stroke="#fff" stroke-width="3.5" stroke-linecap="round"></path><circle cx="15" cy="32" r="5.5" fill="#fff"></circle><circle cx="33" cy="16" r="5.5" style="fill: var(--lime);"></circle></svg></span><span class="brand-word">NEXO</span><span class="spacer"></span><button class="btn ghost small-btn" data-ir-estado="situacion">Saltar</button></div><div class="onb-body"><div class="illus"><svg viewBox="0 0 320 200" aria-hidden="true" role="img"><rect x="40" y="110" width="240" height="14" rx="7" style="fill: var(--ink); opacity: 0.12;"></rect><rect x="40" y="110" width="150" height="14" rx="7" style="fill: var(--ink);"></rect><circle cx="228" cy="68" r="38" style="fill: var(--lime);"></circle><circle cx="228" cy="68" r="16" style="fill: var(--ink);"></circle><rect x="40" y="146" width="90" height="14" rx="7" style="fill: var(--ai);"></rect></svg></div><div class="eyebrow">Tu copiloto financiero</div><h1 class="welcome-title" style="margin-bottom: 0px;">Tu plata, sin rodeos</h1><p class="muted" style="font-size: 18px; line-height: 1.5;">Mira cuánto te queda este mes y cuánto puedes gastar al día, sin hojas de cálculo.</p><span class="spacer"></span><div class="dots" aria-label="Pantalla 1 de 3"><i class="on"></i><i class=""></i><i class=""></i></div><button class="btn primary full" data-ir-estado="b2">Siguiente <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></button></div></div></div><div class="toast-zone" aria-live="polite"></div></div>
-<div data-estado="b2" hidden><div class="app-shell"><div class="onb"><div class="onb-top"><span class="mark small" role="img" aria-label="NEXO"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M15 32L33 16" stroke="#fff" stroke-width="3.5" stroke-linecap="round"></path><circle cx="15" cy="32" r="5.5" fill="#fff"></circle><circle cx="33" cy="16" r="5.5" style="fill: var(--lime);"></circle></svg></span><span class="brand-word">NEXO</span><span class="spacer"></span><button class="btn ghost small-btn" data-ir-estado="situacion">Saltar</button></div><div class="onb-body"><div class="illus"><svg viewBox="0 0 320 200" aria-hidden="true" role="img"><rect x="52" y="44" width="150" height="46" rx="23" style="fill: var(--ink);"></rect><rect x="118" y="108" width="150" height="46" rx="23" style="fill: var(--lime);"></rect><circle cx="76" cy="67" r="9" style="fill: var(--lime);"></circle><circle cx="244" cy="131" r="9" style="fill: var(--ink);"></circle></svg></div><h1 class="welcome-title" style="margin-bottom: 0px;">Registra en segundos</h1><p class="muted" style="font-size: 18px; line-height: 1.5;">Escribe o dilo en voz alta: "gasté 15 mil en almuerzo". NEXO lo entiende y tú solo confirmas.</p><span class="spacer"></span><div class="dots" aria-label="Pantalla 2 de 3"><i class=""></i><i class="on"></i><i class=""></i></div><button class="btn primary full" data-ir-estado="b3">Siguiente <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></button></div></div></div><div class="toast-zone" aria-live="polite"></div></div>
-<div data-estado="b3" hidden><div class="app-shell"><div class="onb"><div class="onb-top"><span class="mark small" role="img" aria-label="NEXO"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M15 32L33 16" stroke="#fff" stroke-width="3.5" stroke-linecap="round"></path><circle cx="15" cy="32" r="5.5" fill="#fff"></circle><circle cx="33" cy="16" r="5.5" style="fill: var(--lime);"></circle></svg></span><span class="brand-word">NEXO</span><span class="spacer"></span><button class="btn ghost small-btn" data-ir-estado="situacion">Saltar</button></div><div class="onb-body"><div class="illus"><svg viewBox="0 0 320 200" aria-hidden="true" role="img"><path d="M96 138L224 62" stroke-width="12" stroke-linecap="round" fill="none" style="stroke: var(--ink);"></path><circle cx="96" cy="138" r="30" style="fill: var(--ai);"></circle><circle cx="224" cy="62" r="30" style="fill: var(--lime);"></circle><circle cx="96" cy="138" r="10" fill="#fff"></circle></svg></div><h1 class="welcome-title" style="margin-bottom: 0px;">Un copiloto, no un banco</h1><p class="muted" style="font-size: 18px; line-height: 1.5;">Te acompaño con tus metas y tus dudas. Nunca te pido claves ni que conectes tus cuentas.</p><span class="spacer"></span><div class="dots" aria-label="Pantalla 3 de 3"><i class=""></i><i class=""></i><i class="on"></i></div><button class="btn primary full" data-ir-estado="situacion">Empezar <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></button></div></div></div><div class="toast-zone" aria-live="polite"></div></div>
-<div data-estado="situacion" hidden><div class="app-shell"><form class="onb" novalidate=""><div class="onb-top"><button type="button" class="back-btn" aria-label="Volver" data-ir-estado="b3"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg></button><h1 class="screen-title">Tu situación inicial</h1></div><div class="onb-body"><p class="muted" style="margin: 0px;">Solo lo mínimo para empezar. No pedimos claves ni datos de tus cuentas.</p><div class="field"><label for="income--situacion">Ingresos mensuales</label><input id="income--situacion" class="input" inputmode="numeric" placeholder="$ 1.500.000" aria-invalid="false" value=""><span class="small muted">Lo que recibes en un mes, aproximado.</span></div><div class="field"><label>Cómo manejas tu plata (opcional)</label><div class="chips"><button type="button" class="chip " aria-pressed="false" data-accion="chip-multi">Débito</button><button type="button" class="chip " aria-pressed="false" data-accion="chip-multi">Crédito</button><button type="button" class="chip " aria-pressed="false" data-accion="chip-multi">Efectivo</button><button type="button" class="chip " aria-pressed="false" data-accion="chip-multi">Billetera digital</button></div><span class="small muted">Solo para ubicarme. No pedimos números de tarjeta ni claves.</span></div><div class="field"><label for="goalName--situacion">Tu primera meta</label><input id="goalName--situacion" class="input" placeholder="Ej. Ahorrar para una moto" aria-invalid="false" value=""></div><div class="chips scroll" aria-label="Ideas de meta"><button type="button" class="chip " aria-pressed="false" data-accion="chip-meta">Moto</button><button type="button" class="chip " aria-pressed="false" data-accion="chip-meta">Viaje</button><button type="button" class="chip " aria-pressed="false" data-accion="chip-meta">Celular</button><button type="button" class="chip " aria-pressed="false" data-accion="chip-meta">Fondo de emergencia</button><button type="button" class="chip " aria-pressed="false" data-accion="chip-meta">Universidad</button></div><div class="field"><label for="goalTarget--situacion">¿Cuánto necesitas para lograrla?</label><input id="goalTarget--situacion" class="input" inputmode="numeric" placeholder="$ 3.000.000" aria-invalid="false" value=""></div><span class="spacer"></span><button class="btn primary full" type="submit" data-accion="continuar">Continuar <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></button></div></form></div><div class="toast-zone" aria-live="polite"></div></div>
-<div data-estado="pendientes" hidden><div class="app-shell"><form class="onb" novalidate=""><div class="onb-top"><button type="button" class="back-btn" aria-label="Volver" data-ir-estado="b3"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg></button><h1 class="screen-title">Tu situación inicial</h1></div><div class="onb-body"><div class="alert warn" role="alert"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-triangle-alert"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg><div>Completa los campos pendientes para continuar.</div></div><div class="field"><label for="income--pendientes">Ingresos mensuales</label><input id="income--pendientes" class="input" inputmode="numeric" placeholder="$ 1.500.000" aria-invalid="true" value="" aria-describedby="income-err--pendientes"><span class="field-error" id="income-err--pendientes">Escribe cuánto recibes al mes.</span></div><div class="field"><label>Cómo manejas tu plata (opcional)</label><div class="chips"><button type="button" class="chip " aria-pressed="false" data-accion="chip-multi">Débito</button><button type="button" class="chip " aria-pressed="false" data-accion="chip-multi">Crédito</button><button type="button" class="chip " aria-pressed="false" data-accion="chip-multi">Efectivo</button><button type="button" class="chip " aria-pressed="false" data-accion="chip-multi">Billetera digital</button></div><span class="small muted">Solo para ubicarme. No pedimos números de tarjeta ni claves.</span></div><div class="field"><label for="goalName--pendientes">Tu primera meta</label><input id="goalName--pendientes" class="input" placeholder="Ej. Ahorrar para una moto" aria-invalid="true" value="" aria-describedby="goalName-err--pendientes"><span class="field-error" id="goalName-err--pendientes">Cuéntame qué quieres lograr.</span></div><div class="chips scroll" aria-label="Ideas de meta"><button type="button" class="chip " aria-pressed="false" data-accion="chip-meta">Moto</button><button type="button" class="chip " aria-pressed="false" data-accion="chip-meta">Viaje</button><button type="button" class="chip " aria-pressed="false" data-accion="chip-meta">Celular</button><button type="button" class="chip " aria-pressed="false" data-accion="chip-meta">Fondo de emergencia</button><button type="button" class="chip " aria-pressed="false" data-accion="chip-meta">Universidad</button></div><div class="field"><label for="goalTarget--pendientes">¿Cuánto necesitas para lograrla?</label><input id="goalTarget--pendientes" class="input" inputmode="numeric" placeholder="$ 3.000.000" aria-invalid="true" value="" aria-describedby="goalTarget-err--pendientes"><span class="field-error" id="goalTarget-err--pendientes">Escribe cuánto necesitas.</span></div><span class="spacer"></span><button class="btn primary full" type="submit" data-accion="continuar">Continuar <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></button></div></form></div><div class="toast-zone" aria-live="polite"></div></div>
-</div>
-<script src="js/prototipo.js"></script>
+<body class="pagina-app" data-pantalla="index">
+
+  <main class="pantalla">
+    <div class="pantalla__contenido">
+
+      <!-- F1.1 · Carrusel de bienvenida -->
+      <section class="paso" id="paso-bienvenida" aria-label="Bienvenida">
+        <header class="barra-onboarding">
+          <span class="logo logo--sm" role="img" aria-label="NEXO">
+            <svg viewBox="0 0 48 48" aria-hidden="true"><path class="logo__linea" d="M15 32L33 16" stroke-width="3.5" stroke-linecap="round"/><circle class="logo__nodo" cx="15" cy="32" r="5.5"/><circle class="logo__nodo logo__nodo--acento" cx="33" cy="16" r="5.5"/></svg>
+          </span>
+          <span class="logotipo">NEXO</span>
+          <span class="espaciador"></span>
+          <button type="button" class="boton boton--texto boton--pequeno" id="boton-saltar">Saltar</button>
+        </header>
+
+        <div class="ilustracion"><img id="diapositiva-imagen" alt=""></div>
+        <p class="etiqueta-mayuscula" id="diapositiva-etiqueta" hidden></p>
+        <h1 class="titulo-pantalla" id="diapositiva-titulo"></h1>
+        <p class="texto-suave" id="diapositiva-texto"></p>
+
+        <div class="paso__fondo">
+          <div class="puntos" id="diapositiva-puntos" role="img" aria-label="Diapositiva 1 de 3"></div>
+          <button type="button" class="boton boton--completo" id="boton-siguiente">
+            <span id="boton-siguiente-texto">Siguiente</span>
+            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- F1.2 · Situación inicial (y F1.2b · Campos pendientes) -->
+      <form class="paso" id="paso-situacion" hidden novalidate>
+        <header class="barra-interna">
+          <button type="button" class="boton-icono" id="boton-volver" aria-label="Volver">
+            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+          </button>
+          <h1 class="titulo-interno">Tu situación inicial</h1>
+        </header>
+
+        <div class="alerta alerta--aviso" id="alerta-pendientes" role="alert" hidden>
+          <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+          <span>Completa los campos pendientes para continuar.</span>
+        </div>
+
+        <p class="texto-suave" id="situacion-introduccion">Solo lo mínimo para empezar. No pedimos claves ni datos de tus cuentas.</p>
+
+        <div class="grupo-campo">
+          <label class="etiqueta-campo" for="campo-ingreso">Ingresos mensuales</label>
+          <input class="campo" id="campo-ingreso" inputmode="numeric" autocomplete="off" placeholder="$ 1.500.000" aria-invalid="false">
+          <p class="texto-suave texto-pequeno" data-ayuda>Lo que recibes en un mes, aproximado.</p>
+          <p class="mensaje-error" id="error-ingreso" hidden>Escribe cuánto recibes al mes.</p>
+        </div>
+
+        <div class="grupo-campo" role="group" aria-labelledby="etiqueta-forma">
+          <span class="etiqueta-campo" id="etiqueta-forma">Cómo manejas tu plata (opcional)</span>
+          <div class="chips" id="chips-forma"></div>
+          <p class="texto-suave texto-pequeno">Solo para ubicarme. No pedimos números de tarjeta ni claves.</p>
+        </div>
+
+        <div class="grupo-campo">
+          <label class="etiqueta-campo" for="campo-meta-nombre">Tu primera meta</label>
+          <input class="campo" id="campo-meta-nombre" autocomplete="off" placeholder="Ej. Ahorrar para una moto" aria-invalid="false">
+          <p class="mensaje-error" id="error-meta-nombre" hidden>Cuéntame qué quieres lograr.</p>
+        </div>
+
+        <div class="chips chips--desliza" id="chips-ideas" role="group" aria-label="Ideas de meta"></div>
+
+        <div class="grupo-campo">
+          <label class="etiqueta-campo" for="campo-meta-monto">¿Cuánto necesitas para lograrla?</label>
+          <input class="campo" id="campo-meta-monto" inputmode="numeric" autocomplete="off" placeholder="$ 3.000.000" aria-invalid="false">
+          <p class="mensaje-error" id="error-meta-monto" hidden>Escribe cuánto necesitas.</p>
+        </div>
+
+        <div class="paso__fondo">
+          <button type="submit" class="boton boton--completo">
+            Continuar
+            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </main>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

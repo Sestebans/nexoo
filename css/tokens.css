@@ -149,6 +149,7 @@
   --alto-control-lg: 52px;
   --alto-barra: 10px;                 /* barra de progreso */
   --alto-campo-area: 120px;           /* campo de texto largo */
+  --proporcion-ilustracion: 16 / 10;  /* forma del recuadro de ilustración */
 
   /* Íconos */
   --icono-sm: 16px;

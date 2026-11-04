@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-label="Barra de avance y un círculo que muestran cuánto te queda este mes">
+  <rect x="40" y="110" width="240" height="14" rx="7" fill="#14142B" opacity="0.12"/>
+  <rect x="40" y="110" width="150" height="14" rx="7" fill="#14142B"/>
+  <circle cx="228" cy="68" r="38" fill="#C9F25C"/>
+  <circle cx="228" cy="68" r="16" fill="#14142B"/>
+  <rect x="40" y="146" width="90" height="14" rx="7" fill="#3A4BFF"/>
+</svg>

@@ -57,6 +57,7 @@ Todos viven en css/components.css y usan solo variables de css/tokens.css. Cada 
 - `.icono` (`--sm`, `--lg`, `--xl`): ícono SVG que toma el color del texto. `<svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg>`
 - `.logo` (`--sm`, `--lg`) con `.logo__linea`, `.logo__nodo`, `.logo__nodo--acento`: el logo de NEXO. Copia el SVG de componentes.html.
 - `.icono-recuadro` (`--pequeno`, `--acento`, `--categoria` con `--comida`, `--transporte`, `--salidas`, `--compras`, `--educacion`, `--otro`): `<span class="icono-recuadro icono-recuadro--categoria icono-recuadro--comida">…</span>`
+- `.ilustracion`: recuadro arena con una imagen de assets/ (carrusel de bienvenida). `<div class="ilustracion"><img src="assets/onboarding-1.svg" alt="Descripción"></div>`
 - `.marca-exito`: círculo de éxito. `<div class="marca-exito">…</div>`
 
 **Botones**
@@ -89,6 +90,7 @@ Todos viven en css/components.css y usan solo variables de css/tokens.css. Cada 
 
 **Navegación**
 - `.barra-pestana`, `.barra-interna`, `.barra-onboarding`: las tres barras superiores. `<header class="barra-interna"><button class="boton-icono">…</button><h1 class="titulo-interno">Registrar gasto</h1></header>`
+- `.puntos` con `.puntos__punto` (`--activo`): los puntos que indican la diapositiva del carrusel. `<div class="puntos" role="img" aria-label="Diapositiva 1 de 3"><span class="puntos__punto puntos__punto--activo"></span><span class="puntos__punto"></span></div>`
 - `.navegacion` con `.navegacion__item` (`--activo`), `.navegacion__icono` y `.navegacion__logo`: barra inferior de 5 secciones. Se pega abajo sola.
 
 **Listas, progreso y racha**

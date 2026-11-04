@@ -186,6 +186,18 @@ a { color: inherit; }
 .icono-recuadro--educacion { --color-categoria: var(--color-cat-educacion); }
 .icono-recuadro--otro { --color-categoria: var(--color-cat-otro); }
 
+/* Recuadro de ilustración (carrusel de bienvenida): la imagen vive en assets/ */
+.ilustracion {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: var(--proporcion-ilustracion);
+  border-radius: var(--radio-xl);
+  background: var(--color-fondo-suave);
+  overflow: hidden;
+}
+.ilustracion img { display: block; width: 100%; height: 100%; }
+
 /* Círculo de éxito (gasto registrado, meta cumplida) */
 .marca-exito {
   display: grid;
@@ -606,6 +618,17 @@ a { color: inherit; }
   min-height: var(--alto-control-md);
   margin-bottom: var(--espacio-4);
 }
+
+/* Puntos del carrusel: indican en qué diapositiva va (no se tocan) */
+.puntos { display: flex; justify-content: center; gap: var(--espacio-2); }
+.puntos__punto {
+  width: var(--espacio-2);
+  height: var(--espacio-2);
+  border-radius: var(--radio-total);
+  background: var(--color-borde);
+  transition: width var(--duracion-boton) ease, background var(--duracion-boton) ease;
+}
+.puntos__punto--activo { width: var(--espacio-6); background: var(--color-primario); }
 
 /* Barra inferior con 5 secciones; la del centro lleva el logo */
 .navegacion {

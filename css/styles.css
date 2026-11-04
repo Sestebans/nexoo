@@ -1,0 +1,32 @@
+/* =========================================================
+   NEXO · Estilos generales de las pantallas
+   ---------------------------------------------------------
+   Solo el layout general. Los colores, tamaños y espacios
+   vienen de tokens.css; los componentes, de components.css.
+   Se enlaza después de tokens.css y components.css.
+   ========================================================= */
+
+/* El contenido de la pantalla es una columna que ocupa todo el alto */
+.pantalla__contenido {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Un "paso" es una parte de la pantalla (por ejemplo, el carrusel o el
+   formulario). Ocupa todo el alto y deja sus botones al fondo. */
+.paso {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+.paso__fondo {
+  display: grid;
+  gap: var(--espacio-4);
+  margin-top: auto;
+  padding-top: var(--espacio-4);
+}
+
+/* Lo que tiene el atributo hidden no se ve (debe ir al final para ganarle
+   a los componentes que definen su propio display) */
+[hidden] { display: none; }

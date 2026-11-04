@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-label="Dos burbujas de mensaje que representan registrar un gasto hablando o escribiendo">
+  <rect x="52" y="44" width="150" height="46" rx="23" fill="#14142B"/>
+  <rect x="118" y="108" width="150" height="46" rx="23" fill="#C9F25C"/>
+  <circle cx="76" cy="67" r="9" fill="#C9F25C"/>
+  <circle cx="244" cy="131" r="9" fill="#14142B"/>
+</svg>
