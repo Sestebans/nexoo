@@ -3,7 +3,7 @@
 NEXO, "Tu primer copiloto financiero", es una app para celular que ayuda a jóvenes de 18 a 25 años con ingresos propios a registrar sus gastos, ahorrar y resolver dudas de plata, sin conectar cuentas ni tarjetas.
 
 **Cómo leer las marcas de "Qué funciona de verdad"**
-- **Real:** funciona y se guarda. Solo aplica a nuestras integraciones de backend ya hechas: el copiloto con IA y el dictado por voz.
+- **Real:** funciona y se guarda. Solo aplica a lo que ya funciona sin servidor propio: el dictado por voz (usa el reconocimiento de voz del navegador). La conexión del copiloto con una IA quedó para Después.
 - **Simulado:** se ve y se puede tocar, pero los datos viven solo en el navegador de la persona (hoy en `localStorage`) o son de ejemplo. Aquí también cuenta la navegación entre pantallas.
 - **Después:** no entra en el MVP.
 
@@ -200,9 +200,10 @@ Solo lo que se deduce de los diseños y del flujo.
 - **Objetivo:** Esta pantalla existe para que una persona pueda preguntar sobre su plata y recibir una respuesta con sus números. Sabemos que funciona si hace una segunda pregunta.
 - **Contenido, en orden de importancia:** 1) respuesta de NEXO. 2) escribir la pregunta. 3) preguntas sugeridas. 4) aviso de qué datos faltan. 5) aviso de que no se comparten claves ni datos de tarjetas.
 - **Qué funciona de verdad:**
-  - Enviar pregunta y preguntas sugeridas: **Real** (función de servidor `/api/copilot` que llama a la API de Anthropic; si falla, responde con cálculos locales y lo avisa).
+  - Enviar pregunta y preguntas sugeridas: **Simulado** (la respuesta se calcula en el navegador con los números de la persona, sin usar una IA).
   - Nueva conversación y análisis ampliado con Pro: **Simulado**.
-- **Qué viaja a la IA:** ingreso mensual, gastado, disponible, días que faltan, lo que puede gastar al día, hasta 4 categorías con monto y porcentaje, las metas (nombre, objetivo y ahorrado), racha, mejor racha, número de gastos y los últimos 6 mensajes del chat. Nunca viajan las descripciones de los gastos.
+  - Conectar el copiloto con una IA (función de servidor `/api/copilot` que llama a la API de Anthropic): **Después**.
+- **Qué sale del dispositivo:** nada. Las respuestas se calculan en el navegador. Para cuando se conecte una IA, la referencia de lo único que viajaría es: ingreso mensual, gastado, disponible, días que faltan, lo que puede gastar al día, hasta 4 categorías con monto y porcentaje, las metas (nombre, objetivo y ahorrado), racha, mejor racha, número de gastos y los últimos 6 mensajes del chat. Nunca viajarían las descripciones de los gastos.
 - **Está lista cuando:**
   - Se ven el saludo de NEXO, las 3 preguntas sugeridas y el campo de escribir.
   - Al enviar una pregunta aparece la respuesta con los números de la persona.

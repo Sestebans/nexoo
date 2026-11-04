@@ -78,6 +78,13 @@ const DATOS = {
      Empieza vacío. Por ahora solo guarda el consejo que da la recompensa. */
   mensajes: [],
 
+  /* Las 3 preguntas sugeridas del chat con el copiloto. Esta lista no está en spec.md. */
+  preguntasSugeridas: [
+    { id: 1, texto: "¿Cuánto puedo gastar al día?" },
+    { id: 2, texto: "¿Voy bien con mi meta?" },
+    { id: 3, texto: "¿En qué gasté más?" }
+  ],
+
   /* Textos de los botones "?" de Inicio. Esta lista no está en spec.md. */
   ayudas: [
     {

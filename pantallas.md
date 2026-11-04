@@ -33,9 +33,9 @@ El mapa de avance de la app: una fila por pantalla del `spec.md`, agrupadas por 
 
 | Pantalla | Archivo | Separada | Con kit | Datos en data.js | Revisada vs spec |
 |---|---|---|---|---|---|
-| F2.1 Chat con el copiloto | `pages/copiloto.html` | ✅ | ⬜ | ⬜ | ⬜ |
-| F2.1b Información insuficiente | `pages/copiloto.html#insuficiente` | ✅ | ⬜ | ⬜ | ⬜ |
-| F2.2 Respuesta con acción sugerida | `pages/copiloto.html#meta` | ✅ | ⬜ | ⬜ | ⬜ |
+| F2.1 Chat con el copiloto | `pages/copiloto.html` | ✅ | ✅ | ✅ | ✅ |
+| F2.1b Información insuficiente | `pages/copiloto.html#insuficiente` | ✅ | ✅ | ✅ | ✅ |
+| F2.2 Respuesta con acción sugerida | `pages/copiloto.html#meta` | ✅ | ✅ | ✅ | ✅ |
 | F2.3 Meta: detalle, abono y ajuste | `pages/meta-detalle.html` (ajuste: `#editar`) | ✅ | ✅ | ✅ | ✅ |
 | F2.4 Racha y recompensas | `pages/racha.html` | ✅ | ✅ | ✅ | ✅ |
 

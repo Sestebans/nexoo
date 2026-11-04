@@ -32,6 +32,19 @@
    líneas porque no cabe, queda a la derecha de la segunda */
 .al-extremo { margin-left: auto; }
 
+/* Texto solo para lectores de pantalla: no se ve, pero el campo sigue teniendo su <label> */
+.solo-lectores {
+  position: absolute;
+  width: var(--borde-fino);
+  height: var(--borde-fino);
+  margin: calc(var(--borde-fino) * -1);
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* En una fila, deja el ícono arriba junto al título en vez de centrarlo */
 .alinear-arriba { align-items: flex-start; }
 

@@ -507,6 +507,284 @@ function pantallaInicio() {
 }
 
 
+/* ---------- Copiloto: el motor que responde con tus números (sin IA) ---------- */
+
+/* Las cuentas del mes que necesita el chat. Se calcula, no se guarda. */
+function resumenFinanciero(perfil, gastos, metas, hoy) {
+  var ingreso = perfil[0].ingresoMensual;
+  var mes = claveDia(hoy).slice(0, 7);
+  var delMes = gastos.filter(function (g) { return g.dia.slice(0, 7) === mes; });
+  var gastado = delMes.reduce(function (suma, g) { return suma + g.monto; }, 0);
+  var disponible = ingreso > 0 ? ingreso - gastado : null;
+  var diasQueFaltan = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).getDate() - hoy.getDate() + 1;
+
+  var porCategoria = {};
+  delMes.forEach(function (g) { porCategoria[g.categoria] = (porCategoria[g.categoria] || 0) + g.monto; });
+  var categorias = Object.keys(porCategoria).map(function (nombre) {
+    return { categoria: nombre, monto: porCategoria[nombre], pct: Math.round(porCategoria[nombre] / gastado * 100) };
+  }).sort(function (a, b) { return b.monto - a.monto; });
+
+  var metasConPct = metas.map(function (m) {
+    return { id: m.id, nombre: m.nombre, objetivo: m.montoObjetivo, ahorrado: m.ahorrado,
+             pct: Math.min(100, Math.round(m.ahorrado / m.montoObjetivo * 100)), cumplida: m.ahorrado >= m.montoObjetivo };
+  });
+
+  return {
+    ingreso: ingreso,
+    gastado: gastado,
+    disponible: disponible,
+    diasQueFaltan: diasQueFaltan,
+    porDia: disponible !== null && disponible > 0 ? Math.floor(disponible / diasQueFaltan) : 0,
+    pasado: disponible !== null && disponible < 0,
+    categorias: categorias,
+    top: categorias[0] || null,
+    metaActiva: metasConPct.filter(function (m) { return !m.cumplida; })[0] || metasConPct[0] || null,
+    racha: calcularRacha(gastos, hoy).racha,
+    mejorRacha: calcularMejorRacha(gastos),
+    cantidadGastos: gastos.length,
+    hayDatosSuficientes: ingreso > 0 && gastos.length >= 3     /* con 3 gastos o más */
+  };
+}
+
+/* De qué trata la pregunta: meta, categoria, presupuesto, racha o general */
+function detectarIntencion(pregunta) {
+  var t = pregunta.toLowerCase();
+  if (/meta|ahorr|voy bien|logro|alcanz/.test(t)) return "meta";
+  if (/m[aá]s gast|categor[ií]a|en qu[eé] gast|donde se me va|d[oó]nde se me va/.test(t)) return "categoria";
+  if (/gastar|semana|al d[ií]a|me queda|disponible|presupuesto|alcanza|este mes/.test(t)) return "presupuesto";
+  if (/racha|d[ií]as seguidos/.test(t)) return "racha";
+  return "general";
+}
+
+/* Estas preguntas necesitan datos para responder bien */
+function necesitaDatos(intencion) {
+  return intencion === "meta" || intencion === "categoria" || intencion === "presupuesto";
+}
+
+/* La respuesta, escrita con los números de la persona. Con Pro suma un análisis ampliado. */
+function responderLocal(intencion, r, conPro) {
+  var texto;
+  if (intencion === "presupuesto") {
+    texto = r.pasado
+      ? "Este mes ya te pasaste por " + pesos(-r.disponible) + " frente a lo que recibes. Lo mejor es pausar gastos no esenciales hasta fin de mes."
+      : "Este mes te quedan " + pesos(r.disponible) + " y faltan " + r.diasQueFaltan + " días. Eso da unos " + pesos(r.porDia) + " al día.";
+  } else if (intencion === "meta") {
+    var m = r.metaActiva;
+    texto = m
+      ? "Vas en " + m.pct + '% de "' + m.nombre + '": ' + pesos(m.ahorrado) + " de " + pesos(m.objetivo) + ". Te faltan " + pesos(Math.max(0, m.objetivo - m.ahorrado)) + "."
+      : "Todavía no tienes una meta creada. Crea una y te ayudo a seguirla.";
+  } else if (intencion === "categoria") {
+    texto = r.top
+      ? "Lo que más pesa este mes es " + r.top.categoria.toLowerCase() + ": " + pesos(r.top.monto) + ", el " + r.top.pct + "% de lo que has registrado."
+      : "Aún no tengo gastos de este mes para comparar.";
+  } else if (intencion === "racha") {
+    texto = r.racha > 0
+      ? "Llevas " + r.racha + (r.racha === 1 ? " día" : " días") + " seguidos registrando. Tu mejor racha es de " + r.mejorRacha + "."
+      : "Hoy puedes empezar una racha nueva registrando un gasto.";
+  } else {
+    texto = r.ingreso > 0
+      ? "Te puedo ayudar con tu presupuesto, tus metas o tus gastos. Por ahora llevas " + pesos(r.gastado) + " gastados este mes y te quedan " + pesos(r.disponible) + "."
+      : "Te puedo ayudar con tu presupuesto, tus metas o tus gastos.";
+  }
+  if (conPro && r.categorias.length > 1) {
+    texto += " Análisis ampliado: " + r.categorias.slice(0, 3).map(function (c) {
+      return c.categoria + " " + pesos(c.monto) + " (" + c.pct + "%)";
+    }).join(", ") + ".";
+  }
+  return texto;
+}
+
+/* La "Acción sugerida" que acompaña a la respuesta sobre la meta (o null si no aplica) */
+function accionSugerida(r) {
+  var m = r.metaActiva;
+  if (!m || !r.ingreso || m.cumplida) return null;
+  var faltan = m.objetivo - m.ahorrado;
+  var cuota = Math.max(10000, Math.round(r.ingreso * 0.2 / 1000) * 1000);
+  var meses = Math.ceil(faltan / cuota);
+  return {
+    texto: "Te faltan " + pesos(faltan) + ' para "' + m.nombre + '". Si apartas ' + pesos(cuota) + " al mes (el 20% de lo que recibes), la logras en unos " + meses + (meses === 1 ? " mes." : " meses."),
+    metaId: m.id
+  };
+}
+
+
+/* ---------- Pantalla: pages/copiloto.html (F2.1, F2.1b y F2.2) ---------- */
+
+/* El logo de NEXO pequeño, para el encabezado de cada mensaje */
+function crearLogoPequeno() {
+  var logo = crearElemento("span", "logo logo--sm");
+  logo.setAttribute("role", "img");
+  logo.setAttribute("aria-label", "NEXO");
+  logo.innerHTML = '<svg viewBox="0 0 48 48" aria-hidden="true"><path class="logo__linea" d="M15 32L33 16" stroke-width="3.5" stroke-linecap="round"/><circle class="logo__nodo" cx="15" cy="32" r="5.5"/><circle class="logo__nodo logo__nodo--acento" cx="33" cy="16" r="5.5"/></svg>';
+  return logo;
+}
+
+function pantallaCopiloto() {
+  var hoy = new Date();
+  var perfil = obtenerDatos("perfil");
+  var gastos = obtenerDatos("gastos");
+  var metas = obtenerDatos("metas");
+  var avisos = obtenerDatos("avisos");
+  var mensajes = obtenerDatos("mensajes");
+  var conPro = diasDePro(obtenerDatos("planPro"), hoy) > 0;
+
+  var chat = document.getElementById("chat");
+  var campo = document.getElementById("campo-pregunta");
+  var botonEnviar = document.getElementById("boton-enviar");
+  var botonNueva = document.getElementById("boton-nueva");
+  var aviso = document.getElementById("aviso-copiloto");
+
+  /* --- Barra superior: racha y avisos sin ver --- */
+  document.getElementById("racha-chip").textContent = calcularRacha(gastos, hoy).racha;
+  var sinVer = avisos.filter(function (a) { return !a.visto; }).length;
+  var contador = document.getElementById("contador-avisos");
+  contador.hidden = sinVer === 0;
+  contador.textContent = sinVer;
+  document.getElementById("enlace-avisos").setAttribute("aria-label", sinVer ? "Avisos, " + sinVer + " nuevos" : "Avisos");
+  if (conPro) document.getElementById("copiloto-subtitulo").textContent = "NEXO Pro activo";
+
+  /* --- Dibujar la conversación --- */
+  function guardarMensajes() { guardarDatos("mensajes", mensajes); }
+
+  function nuevoMensaje(de, texto, extra) {
+    var m = {
+      id: mensajes.reduce(function (mayor, x) { return Math.max(mayor, x.id); }, 0) + 1,
+      de: de,
+      texto: texto,
+      fuente: "",
+      faltanDatos: false,
+      accionSugerida: null,
+      resuelta: ""
+    };
+    Object.keys(extra || {}).forEach(function (clave) { m[clave] = extra[clave]; });
+    mensajes.push(m);
+    return m;
+  }
+
+  function cuerpoDeNexo(m) {
+    var cuerpo = crearElemento("div", "pila");
+    if (m.faltanDatos) {
+      cuerpo.appendChild(crearElemento("strong", "", "Me faltan datos para responder bien"));
+      cuerpo.appendChild(crearElemento("span", "", "Con al menos 3 gastos registrados puedo decirte algo útil. Hoy llevas " + gastos.length + "."));
+      var registrar = crearElemento("a", "boton boton--secundario boton--pequeno alinear-inicio", "Registrar un gasto");
+      registrar.href = "registrar-gasto.html";
+      cuerpo.appendChild(registrar);
+      return cuerpo;
+    }
+    cuerpo.appendChild(crearElemento("span", "", m.texto));
+    if (m.fuente === "cálculo local") {
+      cuerpo.appendChild(crearElemento("span", "texto-suave texto-pequeno", "Respuesta con tus números, sin usar la IA."));
+    }
+    if (m.accionSugerida) {
+      var tarjeta = crearElemento("div", "nota-ayuda pila");
+      tarjeta.appendChild(crearElemento("strong", "", "Acción sugerida"));
+      tarjeta.appendChild(crearElemento("p", "", m.accionSugerida.texto));
+      if (m.resuelta) {
+        tarjeta.appendChild(crearElemento("span", "texto-suave texto-pequeno", m.resuelta === "mantener" ? "Mantienes tu meta como está." : "Vas a ajustar tu meta."));
+      } else {
+        var botones = crearElemento("div", "fila");
+        var mantener = crearElemento("button", "boton boton--terciario boton--pequeno", "Mantener meta");
+        mantener.type = "button";
+        mantener.addEventListener("click", function () {
+          m.resuelta = "mantener";
+          guardarMensajes();
+          pintarConversacion();
+          mostrarAvisoTemporal(aviso, "Listo, mantienes tu meta");
+        });
+        var ajustar = crearElemento("button", "boton boton--pequeno", "Ajustar meta");
+        ajustar.type = "button";
+        ajustar.addEventListener("click", function () {
+          m.resuelta = "ajustar";
+          guardarMensajes();
+          window.location.href = "meta-detalle.html?id=" + m.accionSugerida.metaId + "#editar";
+        });
+        botones.appendChild(mantener);
+        botones.appendChild(ajustar);
+        tarjeta.appendChild(botones);
+      }
+      cuerpo.appendChild(tarjeta);
+    }
+    return cuerpo;
+  }
+
+  function pintarConversacion() {
+    while (chat.children.length > 1) chat.removeChild(chat.lastChild);   /* el primero es el saludo */
+    mensajes.forEach(function (m) {
+      if (m.de === "persona") {
+        chat.appendChild(crearElemento("div", "burbuja burbuja--usuario", m.texto));
+        return;
+      }
+      var burbuja = crearElemento("div", "burbuja burbuja--nexo");
+      var encabezado = crearElemento("div", "burbuja__encabezado");
+      encabezado.appendChild(crearLogoPequeno());
+      encabezado.appendChild(document.createTextNode("NEXO"));
+      burbuja.appendChild(encabezado);
+      burbuja.appendChild(cuerpoDeNexo(m));
+      chat.appendChild(burbuja);
+    });
+    botonNueva.hidden = mensajes.length === 0;
+  }
+
+  function irAlFinal() {
+    if (chat.lastElementChild && chat.lastElementChild.scrollIntoView) chat.lastElementChild.scrollIntoView({ block: "end" });
+  }
+
+  /* --- Preguntar --- */
+  function preguntar(texto) {
+    var pregunta = texto.trim();
+    if (!pregunta) return;
+    nuevoMensaje("persona", pregunta);
+    var intencion = detectarIntencion(pregunta);
+    var resumen = resumenFinanciero(perfil, gastos, metas, hoy);
+    if (necesitaDatos(intencion) && !resumen.hayDatosSuficientes) {
+      nuevoMensaje("NEXO", "Me faltan datos para responder bien.", { faltanDatos: true });
+    } else {
+      nuevoMensaje("NEXO", responderLocal(intencion, resumen, conPro), {
+        fuente: "cálculo local",
+        accionSugerida: intencion === "meta" ? accionSugerida(resumen) : null
+      });
+    }
+    guardarMensajes();
+    pintarConversacion();
+    irAlFinal();
+  }
+
+  var contenedorPreguntas = document.getElementById("preguntas-sugeridas");
+  obtenerDatos("preguntasSugeridas").forEach(function (p) {
+    var chip = crearElemento("button", "chip", p.texto);
+    chip.type = "button";
+    chip.addEventListener("click", function () { preguntar(p.texto); });
+    contenedorPreguntas.appendChild(chip);
+  });
+
+  campo.addEventListener("input", function () { botonEnviar.disabled = !campo.value.trim(); });
+  document.getElementById("formulario-pregunta").addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (!campo.value.trim()) return;
+    var texto = campo.value;
+    campo.value = "";
+    botonEnviar.disabled = true;
+    preguntar(texto);
+  });
+
+  botonNueva.addEventListener("click", function () {
+    mensajes = [];
+    guardarMensajes();
+    pintarConversacion();
+  });
+
+  /* --- Al abrir: copiloto.html#insuficiente y #meta hacen la pregunta de ejemplo --- */
+  pintarConversacion();
+  var pedido = window.location.hash.replace("#", "");
+  if (pedido === "insuficiente" || pedido === "meta") {
+    window.history.replaceState(null, "", window.location.pathname);
+    preguntar(pedido === "meta" ? "¿Voy bien con mi meta?" : "¿Cuánto puedo gastar al día?");
+  } else {
+    irAlFinal();
+  }
+}
+
+
 /* ---------- Pantalla: pages/racha.html (F2.4) ---------- */
 
 /* La racha más larga que ha tenido: la mayor cantidad de días seguidos con gasto */
@@ -1181,7 +1459,8 @@ var PANTALLAS = {
   "inicio": pantallaInicio,
   "registrar-gasto": pantallaRegistrarGasto,
   "meta-detalle": pantallaMetaDetalle,
-  "racha": pantallaRacha
+  "racha": pantallaRacha,
+  "copiloto": pantallaCopiloto
 };
 
 document.addEventListener("DOMContentLoaded", function () {
