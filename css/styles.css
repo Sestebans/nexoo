@@ -10,6 +10,7 @@
 .pantalla__contenido {
   display: flex;
   flex-direction: column;
+  gap: var(--espacio-4);
 }
 
 /* Un "paso" es una parte de la pantalla (por ejemplo, el carrusel o el
@@ -26,6 +27,13 @@
   margin-top: auto;
   padding-top: var(--espacio-4);
 }
+
+/* Empuja un elemento al extremo derecho de su fila; si la fila se parte en dos
+   líneas porque no cabe, queda a la derecha de la segunda */
+.al-extremo { margin-left: auto; }
+
+/* Un texto corto que no se parte en dos líneas (títulos y links de una fila) */
+.sin-salto { white-space: nowrap; }
 
 /* Lo que tiene el atributo hidden no se ve (debe ir al final para ganarle
    a los componentes que definen su propio display) */

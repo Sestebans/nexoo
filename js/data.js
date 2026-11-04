@@ -7,6 +7,16 @@
    Cuando conectemos Supabase, estas listas pasarán a tablas.
    ========================================================= */
 
+/* Fecha "AAAA-MM-DD" de hace n días (0 = hoy). Sirve para que los gastos de
+   ejemplo siempre caigan en los últimos días, sin importar cuándo se abra la app. */
+function diaHace(n) {
+  const fecha = new Date();
+  fecha.setDate(fecha.getDate() - n);
+  const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+  const dia = String(fecha.getDate()).padStart(2, "0");
+  return fecha.getFullYear() + "-" + mes + "-" + dia;
+}
+
 const DATOS = {
 
   /* Perfil de la persona (spec.md, sección Datos > Perfil).
@@ -23,6 +33,48 @@ const DATOS = {
 
   /* Metas de ahorro (spec.md, sección Datos > Metas). Empieza sin metas. */
   metas: [],
+
+  /* Gastos (spec.md, sección Datos > Gastos). Empieza sin gastos.
+     "dia" es la fecha del gasto (AAAA-MM-DD) y "creado" es fecha y hora del registro. */
+  gastos: [],
+
+  /* Avisos (spec.md, sección Datos > Avisos). Empiezan sin avisos. */
+  avisos: [],
+
+  /* Categorías de gastos (spec.md, Gastos) */
+  categorias: [
+    { id: 1, nombre: "Comida" },
+    { id: 2, nombre: "Transporte" },
+    { id: 3, nombre: "Salidas" },
+    { id: 4, nombre: "Compras" },
+    { id: 5, nombre: "Educación" },
+    { id: 6, nombre: "Otro" }
+  ],
+
+  /* Textos de los botones "?" de Inicio. Esta lista no está en spec.md. */
+  ayudas: [
+    {
+      id: "calculo",
+      texto: "Es lo que te queda este mes dividido entre los días que faltan. Se actualiza cada vez que registras un gasto."
+    },
+    {
+      id: "racha",
+      texto: "Cuenta los días seguidos en que registras al menos un gasto. Con 3, 7 y 14 días desbloqueas recompensas."
+    }
+  ],
+
+  /* 6 días de gastos de ejemplo (el último día, ayer; hoy queda libre para registrar).
+     Hoy se cargan con pages/inicio.html#ejemplo; después los cargará el botón
+     "Cargar datos de ejemplo" de Perfil. */
+  gastosEjemplo: [
+    { id: 1, nota: "Libros", monto: 32000, categoria: "Educación", dia: diaHace(6), creado: diaHace(6) + "T12:00:00" },
+    { id: 2, nota: "Transmilenio", monto: 6400, categoria: "Transporte", dia: diaHace(5), creado: diaHace(5) + "T08:00:00" },
+    { id: 3, nota: "Domicilio", monto: 22000, categoria: "Comida", dia: diaHace(4), creado: diaHace(4) + "T20:00:00" },
+    { id: 4, nota: "Cine", monto: 28000, categoria: "Salidas", dia: diaHace(3), creado: diaHace(3) + "T19:00:00" },
+    { id: 5, nota: "Mercado", monto: 41500, categoria: "Comida", dia: diaHace(2), creado: diaHace(2) + "T17:00:00" },
+    { id: 6, nota: "Almuerzo", monto: 13500, categoria: "Comida", dia: diaHace(1), creado: diaHace(1) + "T13:00:00" },
+    { id: 7, nota: "Café", monto: 5500, categoria: "Comida", dia: diaHace(1), creado: diaHace(1) + "T16:00:00" }
+  ],
 
   /* Diapositivas del carrusel de bienvenida (F1.1).
      Esta lista no está en la sección Datos de spec.md: se agregó para

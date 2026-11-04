@@ -62,7 +62,8 @@ Todos viven en css/components.css y usan solo variables de css/tokens.css. Cada 
 
 **Botones**
 - `.boton` (`--secundario`, `--terciario`, `--texto`, `--peligro`, `--pequeno`, `--completo`): `<button class="boton boton--completo">Guardar gasto</button>`. Para deshabilitar, usa el atributo `disabled`.
-- `.boton-icono` (`--activo`, `--primario`, `--compacto`): botón redondo con ícono. `<button class="boton-icono" aria-label="Avisos">…</button>`
+- `.boton-icono` (`--activo`, `--primario`, `--compacto`, `--sobre-oscuro`): botón redondo con ícono. `--sobre-oscuro` se suma a `--compacto` para ponerlo sobre una tarjeta oscura. `<button class="boton-icono" aria-label="Avisos">…</button>`
+- Para navegar, `.boton`, `.boton-icono`, `.chip-racha`, `.tarjeta--boton`, `.fila-lista--boton` y `.navegacion__item` también se pueden usar en un `<a href="…">` (no se subrayan).
 - `.modos` con `.boton-modo` (`--principal`, `--grabando`): `<div class="modos"><button class="boton-modo">Escribir</button>…</div>`
 - `.boton-util` (`--activo`): `<button class="boton-util">Marcar como útil · 3</button>`
 - `.chip-racha`: `<button class="chip-racha">5</button>`

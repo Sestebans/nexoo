@@ -287,6 +287,9 @@ a { color: inherit; }
   border-color: transparent;
   background: transparent;
 }
+/* Para ponerlo sobre una tarjeta oscura (el ojo y el "?" de Inicio) */
+.boton-icono--sobre-oscuro { color: var(--color-texto-inverso); }
+.boton-icono--sobre-oscuro:hover:not(:disabled) { border-color: var(--color-inverso-texto); }
 
 /* Botones de elección: "Grabar audio" / "Escribir" */
 .modos { display: grid; grid-template-columns: 1fr 1fr; gap: var(--espacio-2); }
@@ -339,6 +342,7 @@ a { color: inherit; }
   color: var(--color-texto);
   font-size: var(--texto-sm);
   font-weight: var(--peso-fuerte);
+  text-decoration: none;
 }
 .chip-racha:hover:not(:disabled) { background: var(--color-secundario-hover); }
 
@@ -442,6 +446,7 @@ a { color: inherit; }
   width: 100%;
   text-align: left;
   color: inherit;
+  text-decoration: none;
   cursor: pointer;
   transition: border-color var(--duracion-boton) ease;
 }
@@ -654,6 +659,7 @@ a { color: inherit; }
   color: var(--color-texto-suave);
   font-size: var(--texto-xs);
   font-weight: var(--peso-fuerte);
+  text-decoration: none;
 }
 .navegacion__item:hover { color: var(--color-texto); }
 .navegacion__item--activo { color: var(--color-texto); }
@@ -709,6 +715,7 @@ a { color: inherit; }
   background: transparent;
   color: inherit;
   text-align: left;
+  text-decoration: none;
 }
 .fila-lista--boton:hover { background: var(--color-fondo-suave); }
 

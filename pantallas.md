@@ -16,10 +16,10 @@ El mapa de avance de la app: una fila por pantalla del `spec.md`, agrupadas por 
 
 | Pantalla | Archivo | Separada | Con kit | Datos en data.js | Revisada vs spec |
 |---|---|---|---|---|---|
-| F1.1 Carrusel de bienvenida | `index.html` | ✅ | ✅ | ✅ | ⬜ |
-| F1.2 Situación inicial | `index.html#situacion` | ✅ | ✅ | ✅ | ⬜ |
-| F1.2b Campos pendientes | `index.html#pendientes` | ✅ | ✅ | ✅ | ⬜ |
-| F1.3 Inicio | `pages/inicio.html` | ✅ | ⬜ | ⬜ | ⬜ |
+| F1.1 Carrusel de bienvenida | `index.html` | ✅ | ✅ | ✅ | ✅ |
+| F1.2 Situación inicial | `index.html#situacion` | ✅ | ✅ | ✅ | ✅ |
+| F1.2b Campos pendientes | `index.html#pendientes` | ✅ | ✅ | ✅ | ✅ |
+| F1.3 Inicio | `pages/inicio.html` | ✅ | ✅ | ✅ | ✅ |
 
 ## Tramo 2 · Registrar un gasto
 
