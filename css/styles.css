@@ -32,6 +32,12 @@
    líneas porque no cabe, queda a la derecha de la segunda */
 .al-extremo { margin-left: auto; }
 
+/* En una fila, deja el ícono arriba junto al título en vez de centrarlo */
+.alinear-arriba { align-items: flex-start; }
+
+/* Un botón o etiqueta que no se estira al ancho de su columna */
+.alinear-inicio { justify-self: start; }
+
 /* Texto centrado (por ejemplo, el mensaje de "¡Lo lograste!") */
 .texto-centrado { text-align: center; }
 

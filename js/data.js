@@ -59,13 +59,24 @@ const DATOS = {
 
   /* Catálogo de recompensas por días de racha (spec.md, Recompensas > catálogo) */
   recompensas: [
-    { id: 1, dias: 3, titulo: "Consejo personalizado" },
-    { id: 2, dias: 7, titulo: "3 días de NEXO Pro" },
-    { id: 3, dias: 14, titulo: "7 días de NEXO Pro" }
+    { id: 1, dias: 3, tipo: "consejo", titulo: "Consejo personalizado", texto: "NEXO revisa tus registros y te deja un consejo hecho a tu medida.", diasPro: 0 },
+    { id: 2, dias: 7, tipo: "pro", titulo: "3 días de NEXO Pro", texto: "El copiloto responde con un análisis más completo.", diasPro: 3 },
+    { id: 3, dias: 14, tipo: "pro", titulo: "7 días de NEXO Pro", texto: "Una semana entera del análisis completo del copiloto.", diasPro: 7 }
   ],
 
-  /* Recompensas que ya canjeó (spec.md, Recompensas > canjeadas). Empieza vacía. */
+  /* Recompensas que ya canjeó (spec.md, Recompensas > canjeadas). Empieza vacía.
+     Cada elemento: { id, recompensaId }. */
   canjeadas: [],
+
+  /* Plan Pro (spec.md, Recompensas > plan Pro): hasta cuándo está activo
+     (fecha y hora ISO). Vacío = no está activo. Hoy se guarda en el navegador. */
+  planPro: [
+    { id: 1, proHasta: "" }
+  ],
+
+  /* Mensajes del chat con el copiloto (spec.md, Datos > Mensajes del chat).
+     Empieza vacío. Por ahora solo guarda el consejo que da la recompensa. */
+  mensajes: [],
 
   /* Textos de los botones "?" de Inicio. Esta lista no está en spec.md. */
   ayudas: [

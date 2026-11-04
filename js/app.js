@@ -252,6 +252,8 @@ var ICONOS = {
   otro: '<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>',
   meta: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
   check: '<path d="M20 6 9 17l-5-5"/>',
+  candado: '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  regalo: '<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>',
   alerta: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
   circuloCheck: '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
   flechaDer: '<path d="m9 18 6-6-6-6"/>'
@@ -502,6 +504,151 @@ function pantallaInicio() {
     fila.appendChild(crearIcono("flechaDer", "icono--sm"));
     lista.appendChild(fila);
   });
+}
+
+
+/* ---------- Pantalla: pages/racha.html (F2.4) ---------- */
+
+/* La racha más larga que ha tenido: la mayor cantidad de días seguidos con gasto */
+function calcularMejorRacha(gastos) {
+  var dias = {};
+  gastos.forEach(function (g) { dias[g.dia] = true; });
+  var mejor = 0;
+  var actual = 0;
+  var anterior = null;
+  Object.keys(dias).sort().forEach(function (clave) {
+    var fecha = new Date(clave + "T00:00:00");
+    actual = anterior && Math.round((fecha - anterior) / 86400000) === 1 ? actual + 1 : 1;
+    if (actual > mejor) mejor = actual;
+    anterior = fecha;
+  });
+  return mejor;
+}
+
+/* Días que le quedan al plan Pro (0 si no está activo) */
+function diasDePro(planPro, ahora) {
+  var hasta = planPro[0] && planPro[0].proHasta ? new Date(planPro[0].proHasta) : null;
+  return hasta && hasta > ahora ? Math.ceil((hasta - ahora) / 86400000) : 0;
+}
+
+/* El consejo de la recompensa: se calcula con los gastos de este mes */
+function textoConsejo(gastos, ingreso, hoy) {
+  var mes = claveDia(hoy).slice(0, 7);
+  var delMes = gastos.filter(function (g) { return g.dia.slice(0, 7) === mes; });
+  if (delMes.length === 0) return "Registra tus gastos unos días y te doy un consejo hecho a tu medida.";
+  var porCategoria = {};
+  var total = 0;
+  delMes.forEach(function (g) {
+    porCategoria[g.categoria] = (porCategoria[g.categoria] || 0) + g.monto;
+    total += g.monto;
+  });
+  var mayor = Object.keys(porCategoria).sort(function (a, b) { return porCategoria[b] - porCategoria[a]; })[0];
+  var pasado = ingreso > 0 && total > ingreso ? " Este mes ya te pasaste de lo que recibes, así que vale la pena frenar lo no esencial." : "";
+  return "Lo que más pesa en tu mes es " + mayor.toLowerCase() + ": " + pesos(porCategoria[mayor]) + ", el " + Math.round(porCategoria[mayor] / total * 100) + "% de lo que has registrado. Prueba ponerle un tope semanal y mira cómo cambia tu cifra al día." + pasado;
+}
+
+function pantallaRacha() {
+  var hoy = new Date();
+  var gastos = obtenerDatos("gastos");
+  var recompensas = obtenerDatos("recompensas");
+  var canjeadas = obtenerDatos("canjeadas");
+  var planPro = obtenerDatos("planPro");
+  var ingreso = obtenerDatos("perfil")[0].ingresoMensual;
+
+  var datosRacha = calcularRacha(gastos, hoy);
+  var mejor = calcularMejorRacha(gastos);
+  var aviso = document.getElementById("aviso-racha");
+
+  function plural(n) { return n === 1 ? "día" : "días"; }
+  function estaCanjeada(r) { return canjeadas.some(function (c) { return c.recompensaId === r.id; }); }
+
+  /* --- Racha actual --- */
+  document.getElementById("racha-numero").textContent = datosRacha.racha;
+  document.getElementById("racha-unidad").textContent = plural(datosRacha.racha);
+  pintarSemana(document.getElementById("racha-dias"), datosRacha.semana);
+
+  var proxima = recompensas.filter(function (r) { return mejor < r.dias; })[0];
+  document.getElementById("racha-mejor").textContent = "Tu mejor racha: " + mejor + " " + plural(mejor) + ". " +
+    (proxima ? "Te faltan " + (proxima.dias - mejor) + ' para "' + proxima.titulo + '".' : "Ya reclamaste todo lo disponible.");
+
+  /* --- Plan Pro --- */
+  function pintarPro() {
+    var quedan = diasDePro(planPro, new Date());
+    document.getElementById("panel-pro").hidden = quedan === 0;
+    document.getElementById("pro-texto").textContent = "NEXO Pro activo. Te quedan " + quedan + " " + plural(quedan) + ".";
+  }
+
+  /* --- Recompensas --- */
+  var lista = document.getElementById("lista-recompensas");
+  var botonConsejo = document.getElementById("boton-consejo");
+
+  function canjear(r) {
+    canjeadas.push({ id: canjeadas.reduce(function (m, c) { return Math.max(m, c.id); }, 0) + 1, recompensaId: r.id });
+    guardarDatos("canjeadas", canjeadas);
+
+    if (r.diasPro > 0) {
+      /* Los días de Pro se suman a los que ya le queden */
+      var actual = planPro[0].proHasta ? new Date(planPro[0].proHasta).getTime() : 0;
+      planPro[0].proHasta = new Date(Math.max(Date.now(), actual) + r.diasPro * 86400000).toISOString();
+      guardarDatos("planPro", planPro);
+    }
+
+    if (r.tipo === "consejo") {
+      var mensajes = obtenerDatos("mensajes");
+      mensajes.push({
+        id: mensajes.reduce(function (m, x) { return Math.max(m, x.id); }, 0) + 1,
+        de: "NEXO",
+        texto: textoConsejo(gastos, ingreso, hoy),
+        fuente: "cálculo local",
+        faltanDatos: false,
+        accionSugerida: null,
+        resuelta: ""
+      });
+      guardarDatos("mensajes", mensajes);
+      mostrarAvisoTemporal(aviso, "Recompensa canjeada. Te dejé un consejo en el copiloto.");
+    } else {
+      mostrarAvisoTemporal(aviso, "Recompensa canjeada: " + r.titulo);
+    }
+    pintarRecompensas();
+    pintarPro();
+  }
+
+  function pintarRecompensas() {
+    lista.replaceChildren();
+    recompensas.forEach(function (r) {
+      var desbloqueada = mejor >= r.dias;
+      var canjeada = estaCanjeada(r);
+      var tarjeta = crearElemento("section", "tarjeta" + (desbloqueada ? "" : " tarjeta--bloqueada"));
+      var fila = crearElemento("div", "fila alinear-arriba");
+      var icono = crearElemento("span", "icono-recuadro" + (desbloqueada ? " icono-recuadro--acento" : ""));
+      icono.appendChild(crearIcono(desbloqueada ? "regalo" : "candado"));
+      var cuerpo = crearElemento("div", "fila-lista__cuerpo pila");
+      cuerpo.appendChild(crearElemento("h3", "titulo-tarjeta", r.titulo));
+      cuerpo.appendChild(crearElemento("p", "texto-suave texto-pequeno", r.texto));
+      if (canjeada) {
+        var etiqueta = crearElemento("span", "etiqueta etiqueta--oscura alinear-inicio");
+        etiqueta.appendChild(crearIcono("check", "icono--sm"));
+        etiqueta.appendChild(document.createTextNode("Canjeada"));
+        cuerpo.appendChild(etiqueta);
+      } else if (desbloqueada) {
+        var boton = crearElemento("button", "boton boton--pequeno alinear-inicio", "Canjear");
+        boton.type = "button";
+        boton.addEventListener("click", function () { canjear(r); });
+        cuerpo.appendChild(boton);
+      } else {
+        cuerpo.appendChild(crearElemento("span", "texto-suave texto-pequeno", "Se desbloquea con " + r.dias + " días de racha. Te faltan " + (r.dias - mejor) + "."));
+      }
+      fila.appendChild(icono);
+      fila.appendChild(cuerpo);
+      tarjeta.appendChild(fila);
+      lista.appendChild(tarjeta);
+    });
+    var consejo = recompensas.filter(function (r) { return r.tipo === "consejo"; })[0];
+    botonConsejo.hidden = !(consejo && estaCanjeada(consejo));
+  }
+
+  pintarPro();
+  pintarRecompensas();
 }
 
 
@@ -1033,7 +1180,8 @@ var PANTALLAS = {
   "index": pantallaIndex,
   "inicio": pantallaInicio,
   "registrar-gasto": pantallaRegistrarGasto,
-  "meta-detalle": pantallaMetaDetalle
+  "meta-detalle": pantallaMetaDetalle,
+  "racha": pantallaRacha
 };
 
 document.addEventListener("DOMContentLoaded", function () {
