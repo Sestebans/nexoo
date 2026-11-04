@@ -32,6 +32,9 @@
    líneas porque no cabe, queda a la derecha de la segunda */
 .al-extremo { margin-left: auto; }
 
+/* Texto centrado (por ejemplo, el mensaje de "¡Lo lograste!") */
+.texto-centrado { text-align: center; }
+
 /* Un texto corto que no se parte en dos líneas (títulos y links de una fila) */
 .sin-salto { white-space: nowrap; }
 

@@ -505,6 +505,153 @@ function pantallaInicio() {
 }
 
 
+/* ---------- Pantalla: pages/meta-detalle.html (F2.3) ---------- */
+
+/* Hace que un campo de monto se escriba con formato de pesos: $ 1.500.000 */
+function conectarMontoEnPesos(campo) {
+  campo.addEventListener("input", function () {
+    var numeros = soloNumeros(campo.value);
+    campo.value = numeros ? "$ " + conPuntos(numeros) : "";
+  });
+}
+
+/* Muestra un aviso corto dentro de la página y lo quita a los 4 segundos */
+var temporizadorAviso = null;
+function mostrarAvisoTemporal(contenedor, textoAviso) {
+  contenedor.querySelector("span").textContent = textoAviso;
+  contenedor.hidden = false;
+  window.clearTimeout(temporizadorAviso);
+  temporizadorAviso = window.setTimeout(function () { contenedor.hidden = true; }, 4000);
+}
+
+function pantallaMetaDetalle() {
+  var metas = obtenerDatos("metas");
+
+  /* Qué meta se muestra: la del ?id= del link o, si no trae id, la meta activa
+     (la primera que todavía no está cumplida, igual que en Inicio). */
+  var idPedido = new URLSearchParams(window.location.search).get("id");
+  var meta = idPedido
+    ? metas.filter(function (m) { return String(m.id) === idPedido; })[0]
+    : (metas.filter(function (m) { return m.ahorrado < m.montoObjetivo; })[0] || metas[0]);
+
+  var pasoMeta = document.getElementById("paso-meta");
+  var pasoCelebracion = document.getElementById("paso-celebracion");
+  var pasoNoEncontrada = document.getElementById("paso-no-encontrada");
+
+  if (!meta) {
+    pasoNoEncontrada.hidden = false;
+    return;
+  }
+
+  var formularioAbono = document.getElementById("formulario-abono");
+  var formularioAjuste = document.getElementById("formulario-ajuste");
+  var botonAjustar = document.getElementById("boton-ajustar");
+  var campoAbono = document.getElementById("campo-abono");
+  var errorAbono = document.getElementById("error-abono");
+  var campoNombre = document.getElementById("campo-ajuste-nombre");
+  var campoObjetivo = document.getElementById("campo-ajuste-objetivo");
+  var alertaAjuste = document.getElementById("alerta-ajuste");
+  var aviso = document.getElementById("aviso-meta");
+
+  function cumplida() { return meta.ahorrado >= meta.montoObjetivo; }
+  function guardarMetas() { guardarDatos("metas", metas); }
+
+  /* --- Lo que se calcula con la meta --- */
+  function pintarMeta() {
+    var faltan = Math.max(0, meta.montoObjetivo - meta.ahorrado);
+    var porcentaje = Math.min(100, Math.round(meta.ahorrado / meta.montoObjetivo * 100));
+    document.getElementById("meta-nombre").textContent = meta.nombre;
+    document.getElementById("meta-faltan").textContent = "Te faltan " + pesos(faltan);
+    document.getElementById("meta-porcentaje").textContent = porcentaje + "%";
+    document.getElementById("meta-ahorrado").textContent = pesos(meta.ahorrado);
+    document.getElementById("meta-objetivo").textContent = "de " + pesos(meta.montoObjetivo);
+    var barra = document.getElementById("meta-barra");
+    barra.style.setProperty("--progreso", porcentaje + "%");
+    barra.setAttribute("aria-label", "Llevas el " + porcentaje + "% de tu meta");
+  }
+
+  function mostrarCelebracion() {
+    document.getElementById("celebracion-texto").textContent = 'Completaste "' + meta.nombre + '" con ' + pesos(meta.ahorrado) + ".";
+    pasoMeta.hidden = true;
+    pasoCelebracion.hidden = false;
+    window.scrollTo(0, 0);
+  }
+
+  function mostrarAjuste(abierto) {
+    formularioAjuste.hidden = !abierto;
+    formularioAbono.hidden = abierto;
+    botonAjustar.hidden = abierto;
+    alertaAjuste.hidden = true;
+    if (abierto) {
+      campoNombre.value = meta.nombre;
+      campoObjetivo.value = "$ " + conPuntos(String(meta.montoObjetivo));
+      campoNombre.focus();
+    }
+  }
+
+  conectarMontoEnPesos(campoAbono);
+  conectarMontoEnPesos(campoObjetivo);
+
+  /* --- Abonar --- */
+  campoAbono.addEventListener("input", function () {
+    if (Number(soloNumeros(campoAbono.value)) > 0) {
+      errorAbono.hidden = true;
+      campoAbono.setAttribute("aria-invalid", "false");
+    }
+  });
+
+  formularioAbono.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var abono = Number(soloNumeros(campoAbono.value));
+    if (abono <= 0) {
+      errorAbono.hidden = false;
+      campoAbono.setAttribute("aria-invalid", "true");
+      campoAbono.setAttribute("aria-describedby", "error-abono");
+      campoAbono.focus();
+      return;
+    }
+    errorAbono.hidden = true;
+    campoAbono.setAttribute("aria-invalid", "false");
+    campoAbono.value = "";
+    meta.ahorrado += abono;
+    guardarMetas();
+    if (cumplida()) { mostrarCelebracion(); return; }
+    pintarMeta();
+    mostrarAvisoTemporal(aviso, "Abono registrado");
+  });
+
+  /* --- Ajustar nombre y valor objetivo --- */
+  botonAjustar.addEventListener("click", function () { mostrarAjuste(true); });
+  document.getElementById("boton-cancelar-ajuste").addEventListener("click", function () { mostrarAjuste(false); });
+
+  formularioAjuste.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var nombre = campoNombre.value.trim();
+    var objetivo = Number(soloNumeros(campoObjetivo.value));
+    if (nombre.length < 2 || objetivo <= 0) {
+      alertaAjuste.hidden = false;
+      return;
+    }
+    meta.nombre = nombre;
+    meta.montoObjetivo = objetivo;
+    guardarMetas();
+    mostrarAjuste(false);
+    if (cumplida()) { mostrarCelebracion(); return; }
+    pintarMeta();
+    mostrarAvisoTemporal(aviso, "Meta actualizada");
+  });
+
+  /* --- Al abrir --- */
+  pintarMeta();
+  if (cumplida()) {
+    mostrarCelebracion();
+  } else {
+    pasoMeta.hidden = false;
+    if (window.location.hash === "#editar") mostrarAjuste(true);
+  }
+}
+
+
 /* ---------- Dictado: entender una frase como "gasté 15 mil en almuerzo" ---------- */
 
 var NUMEROS_EN_PALABRAS = { un: 1, una: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6, siete: 7, ocho: 8, nueve: 9, diez: 10, quince: 15, veinte: 20, treinta: 30, cuarenta: 40, cincuenta: 50 };
@@ -885,7 +1032,8 @@ function pantallaRegistrarGasto() {
 var PANTALLAS = {
   "index": pantallaIndex,
   "inicio": pantallaInicio,
-  "registrar-gasto": pantallaRegistrarGasto
+  "registrar-gasto": pantallaRegistrarGasto,
+  "meta-detalle": pantallaMetaDetalle
 };
 
 document.addEventListener("DOMContentLoaded", function () {

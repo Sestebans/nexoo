@@ -1,18 +1,122 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta name="theme-color" content="#F6F2EA" />
-<meta name="description" content="NEXO: tu dinero, pero con alguien de tu lado." />
-<title>NEXO · Tu copiloto financiero</title>
-<link rel="stylesheet" href="../css/prototipo.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#F6F2EA">
+  <meta name="description" content="NEXO: tu dinero, pero con alguien de tu lado.">
+  <title>Tu meta · NEXO</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/styles.css">
 </head>
-<body data-pagina="meta-detalle">
-<div id="root">
-<div data-estado="base"><div class="app-shell"><main class="main plain"><div class="screen"><div class="screen-top"><a class="back-btn" aria-label="Volver" href="metas.html" data-era-boton><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg></a><h1 class="screen-title">Tu meta</h1><span class="spacer"></span></div><div class="stack"><section class="card"><div class="row"><span class="icon-tile lime"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bike"><circle cx="18.5" cy="17.5" r="3.5"></circle><circle cx="5.5" cy="17.5" r="3.5"></circle><circle cx="15" cy="5" r="1"></circle><path d="M12 17.5V14l-3-3 4-3 2 3h2"></path></svg></span><div style="flex: 1 1 0%;"><h2 style="margin: 0px;">Moto</h2><span class="small muted">Te faltan $&nbsp;2.400.000</span></div><span class="pill">20%</span></div><div class="row wrap" style="margin: 18px 0px 8px;"><span class="money md" style="--k: 1;">$&nbsp;600.000</span><span class="spacer"></span><span class="small muted">de $&nbsp;3.000.000</span></div><div class="bar"><span style="width: 20%;"></span></div></section><form class="card stack" novalidate=""><h3 style="margin: 0px;">Abonar a esta meta</h3><input class="input" aria-label="Valor del abono" inputmode="numeric" placeholder="$ 50.000" aria-invalid="false" value=""><button class="btn primary full" type="submit">Abonar</button></form><button class="btn tertiary full" data-ir-estado="editar">Ajustar meta</button></div></div></main></div><div class="toast-zone" aria-live="polite"></div></div>
-<div data-estado="editar" hidden><div class="app-shell"><main class="main plain"><div class="screen"><div class="screen-top"><a class="back-btn" aria-label="Volver" href="metas.html" data-era-boton><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg></a><h1 class="screen-title">Tu meta</h1><span class="spacer"></span></div><div class="stack"><section class="card"><div class="row"><span class="icon-tile lime"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bike"><circle cx="18.5" cy="17.5" r="3.5"></circle><circle cx="5.5" cy="17.5" r="3.5"></circle><circle cx="15" cy="5" r="1"></circle><path d="M12 17.5V14l-3-3 4-3 2 3h2"></path></svg></span><div style="flex: 1 1 0%;"><h2 style="margin: 0px;">Moto</h2><span class="small muted">Te faltan $&nbsp;2.400.000</span></div><span class="pill">20%</span></div><div class="row wrap" style="margin: 18px 0px 8px;"><span class="money md" style="--k: 1;">$&nbsp;600.000</span><span class="spacer"></span><span class="small muted">de $&nbsp;3.000.000</span></div><div class="bar"><span style="width: 20%;"></span></div></section><form class="card stack" novalidate=""><h3 style="margin: 0px;">Ajustar meta</h3><div class="field"><label for="ename--editar">Nombre</label><input id="ename--editar" class="input" value="Moto"></div><div class="field"><label for="etarget--editar">Valor objetivo</label><input id="etarget--editar" class="input" inputmode="numeric" value="$ 3.000.000"></div><button class="btn primary full" type="submit" data-ir-estado="base">Guardar cambios</button><button class="btn ghost full" type="button" data-ir-estado="base">Cancelar</button></form></div></div></main></div><div class="toast-zone" aria-live="polite"></div></div>
-</div>
-<script src="../js/prototipo.js"></script>
+<body class="pagina-app" data-pantalla="meta-detalle">
+
+  <main class="pantalla">
+    <div class="pantalla__contenido">
+
+      <!-- F2.3 · Detalle de la meta, abono y ajuste -->
+      <section class="paso" id="paso-meta" aria-label="Tu meta" hidden>
+        <header class="barra-interna">
+          <a class="boton-icono" href="metas.html" aria-label="Volver a mis metas">
+            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+          </a>
+          <h1 class="titulo-interno">Tu meta</h1>
+        </header>
+
+        <div class="aviso-temporal" id="aviso-meta" role="status" hidden>
+          <span id="aviso-meta-texto"></span>
+        </div>
+
+        <section class="tarjeta pila" aria-label="Resumen de la meta">
+          <div class="fila">
+            <span class="icono-recuadro icono-recuadro--acento">
+              <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            </span>
+            <div class="fila-lista__cuerpo pila">
+              <h2 class="titulo-tarjeta" id="meta-nombre"></h2>
+              <span class="texto-suave texto-pequeno" id="meta-faltan"></span>
+            </div>
+            <span class="etiqueta" id="meta-porcentaje"></span>
+          </div>
+          <div class="fila fila--ajusta">
+            <span class="cifra cifra--m" id="meta-ahorrado"></span>
+            <span class="espaciador"></span>
+            <span class="texto-suave texto-pequeno" id="meta-objetivo"></span>
+          </div>
+          <div class="barra-progreso" id="meta-barra" role="img" aria-label="Llevas el 0% de tu meta">
+            <span class="barra-progreso__relleno"></span>
+          </div>
+        </section>
+
+        <form class="tarjeta pila" id="formulario-abono" novalidate>
+          <h2 class="titulo-tarjeta">Abonar a esta meta</h2>
+          <div class="grupo-campo">
+            <label class="etiqueta-campo" for="campo-abono">Valor del abono</label>
+            <input class="campo" id="campo-abono" inputmode="numeric" autocomplete="off" placeholder="$ 50.000" aria-invalid="false">
+            <p class="mensaje-error" id="error-abono" hidden>Escribe un valor mayor a $0.</p>
+          </div>
+          <button type="submit" class="boton boton--completo">Abonar</button>
+        </form>
+
+        <button type="button" class="boton boton--terciario boton--completo" id="boton-ajustar">Ajustar meta</button>
+
+        <form class="tarjeta pila" id="formulario-ajuste" novalidate hidden>
+          <h2 class="titulo-tarjeta">Ajustar meta</h2>
+          <div class="grupo-campo">
+            <label class="etiqueta-campo" for="campo-ajuste-nombre">Nombre</label>
+            <input class="campo" id="campo-ajuste-nombre" autocomplete="off">
+          </div>
+          <div class="grupo-campo">
+            <label class="etiqueta-campo" for="campo-ajuste-objetivo">Valor objetivo</label>
+            <input class="campo" id="campo-ajuste-objetivo" inputmode="numeric" autocomplete="off" placeholder="$ 3.000.000">
+          </div>
+          <div class="alerta alerta--aviso" id="alerta-ajuste" role="alert" hidden>
+            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+            <span>Revisa el nombre y el valor de la meta.</span>
+          </div>
+          <button type="submit" class="boton boton--completo">Guardar cambios</button>
+          <button type="button" class="boton boton--texto boton--completo" id="boton-cancelar-ajuste">Cancelar</button>
+        </form>
+      </section>
+
+      <!-- Celebración al cumplir la meta -->
+      <section class="paso" id="paso-celebracion" aria-label="Meta cumplida" hidden>
+        <header class="barra-interna">
+          <a class="boton-icono" href="metas.html" aria-label="Volver a mis metas">
+            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+          </a>
+          <h1 class="titulo-interno">Meta cumplida</h1>
+        </header>
+        <div class="marca-exito">
+          <svg class="icono icono--xl" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+        </div>
+        <h2 class="titulo-pantalla texto-centrado">¡Lo lograste!</h2>
+        <p class="texto-suave texto-centrado" id="celebracion-texto"></p>
+        <div class="paso__fondo">
+          <a class="boton boton--completo" href="crear-meta.html">Crear otra meta</a>
+          <a class="boton boton--texto boton--completo" href="metas.html">Volver a mis metas</a>
+        </div>
+      </section>
+
+      <!-- Si no hay una meta con ese id -->
+      <section class="paso" id="paso-no-encontrada" aria-label="Meta no encontrada" hidden>
+        <header class="barra-interna">
+          <a class="boton-icono" href="metas.html" aria-label="Volver a mis metas">
+            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+          </a>
+          <h1 class="titulo-interno">Meta</h1>
+        </header>
+        <div class="tarjeta tarjeta--vacia pila">
+          <p>No encontré esa meta.</p>
+          <a class="boton boton--secundario" href="crear-meta.html">Crear una meta</a>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script src="../js/data.js"></script>
+  <script src="../js/app.js"></script>
 </body>
 </html>
