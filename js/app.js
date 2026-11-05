@@ -343,14 +343,6 @@ function pintarSemana(contenedor, semana) {
 /* ---------- Pantalla: pages/inicio.html (F1.3) ---------- */
 
 function pantallaInicio() {
-  /* Solo mientras no exista el botón "Cargar datos de ejemplo" de Perfil:
-     inicio.html#ejemplo carga los gastos de ejemplo e inicio.html#vacio los borra. */
-  var pedido = window.location.hash.replace("#", "");
-  if (pedido === "ejemplo" || pedido === "vacio") {
-    guardarDatos("gastos", pedido === "ejemplo" ? obtenerDatos("gastosEjemplo") : []);
-    window.history.replaceState(null, "", window.location.pathname);
-  }
-
   var perfil = obtenerDatos("perfil");
   var metas = obtenerDatos("metas");
   var gastos = obtenerDatos("gastos");
@@ -2409,11 +2401,96 @@ function pantallaGastos() {
 }
 
 
+/* ---------- Pantalla: pages/perfil.html (Perfil) ---------- */
+
+function pantallaPerfil() {
+  var campoIngreso = document.getElementById("campo-ingreso");
+  var errorIngreso = document.getElementById("error-ingreso");
+  var aviso = document.getElementById("aviso-perfil");
+  var confirmar = document.getElementById("confirmar-reinicio");
+
+  /* --- Racha y plan (se calculan, no se guardan) --- */
+  function pintarRachaYPlan() {
+    var hoy = new Date();
+    var racha = calcularRacha(obtenerDatos("gastos"), hoy).racha;
+    document.getElementById("perfil-racha").textContent = racha;
+    document.getElementById("perfil-racha-texto").textContent = racha === 1 ? "día de racha" : "días de racha";
+    var diasPro = diasDePro(obtenerDatos("planPro"), hoy);
+    document.getElementById("perfil-plan").textContent = diasPro > 0 ? "Pro" : "Gratis";
+    document.getElementById("perfil-plan-texto").textContent = diasPro > 0
+      ? (diasPro === 1 ? "1 día restante" : diasPro + " días restantes")
+      : "plan de NEXO";
+  }
+
+  /* --- Ingreso mensual --- */
+  campoIngreso.value = "";
+  var ingresoActual = obtenerDatos("perfil")[0].ingresoMensual;
+  if (ingresoActual > 0) campoIngreso.value = "$ " + conPuntos(String(ingresoActual));
+  conectarMontoEnPesos(campoIngreso);
+
+  function mostrarErrorIngreso(hay) {
+    campoIngreso.classList.toggle("campo--error", hay);
+    campoIngreso.setAttribute("aria-invalid", hay ? "true" : "false");
+    if (hay) campoIngreso.setAttribute("aria-describedby", "error-ingreso");
+    else campoIngreso.removeAttribute("aria-describedby");
+    errorIngreso.hidden = !hay;
+  }
+
+  campoIngreso.addEventListener("input", function () {
+    if (Number(soloNumeros(campoIngreso.value)) > 0) mostrarErrorIngreso(false);
+  });
+
+  document.getElementById("formulario-ingreso").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var ingreso = Number(soloNumeros(campoIngreso.value));
+    if (ingreso <= 0) {
+      mostrarErrorIngreso(true);
+      campoIngreso.focus();
+      return;
+    }
+    mostrarErrorIngreso(false);
+    var perfil = obtenerDatos("perfil");
+    perfil[0].ingresoMensual = ingreso;
+    guardarDatos("perfil", perfil);
+    mostrarAvisoTemporal(aviso, "Ingresos actualizados");
+  });
+
+  /* --- Modo demostración --- */
+  document.getElementById("boton-ejemplo").addEventListener("click", function () {
+    guardarDatos("gastos", obtenerDatos("gastosEjemplo"));
+    pintarRachaYPlan();
+    mostrarAvisoTemporal(aviso, "Datos de ejemplo cargados");
+  });
+
+  function mostrarConfirmacion(abierta) {
+    confirmar.hidden = !abierta;
+    document.getElementById("boton-reiniciar").hidden = abierta;
+    if (abierta) confirmar.scrollIntoView({ block: "center" });
+  }
+
+  document.getElementById("boton-reiniciar").addEventListener("click", function () { mostrarConfirmacion(true); });
+  document.getElementById("boton-cancelar-reinicio").addEventListener("click", function () { mostrarConfirmacion(false); });
+
+  /* Reiniciar borra todo lo que NEXO guardó en este navegador y vuelve a la bienvenida */
+  document.getElementById("boton-confirmar-reinicio").addEventListener("click", function () {
+    try {
+      Object.keys(window.localStorage).filter(function (clave) {
+        return clave.indexOf("nexo:") === 0;
+      }).forEach(function (clave) { window.localStorage.removeItem(clave); });
+    } catch (e) { /* si el navegador no deja borrar, igual se vuelve a la bienvenida */ }
+    window.location.href = "../index.html";
+  });
+
+  pintarRachaYPlan();
+}
+
+
 /* ---------- Arranque: cada página ejecuta solo la función de su pantalla ---------- */
 
 var PANTALLAS = {
   "index": pantallaIndex,
   "inicio": pantallaInicio,
+  "perfil": pantallaPerfil,
   "registrar-gasto": pantallaRegistrarGasto,
   "gastos": pantallaGastos,
   "meta-detalle": pantallaMetaDetalle,

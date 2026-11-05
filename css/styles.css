@@ -51,6 +51,13 @@
 /* Un botón o etiqueta que no se estira al ancho de su columna */
 .alinear-inicio { justify-self: start; }
 
+/* Dos tarjetas lado a lado, del mismo ancho (racha y plan en Perfil) */
+.dos-columnas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--espacio-4);
+}
+
 /* Texto centrado (por ejemplo, el mensaje de "¡Lo lograste!") */
 .texto-centrado { text-align: center; }
 

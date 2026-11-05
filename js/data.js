@@ -176,8 +176,7 @@ const DATOS = {
   ],
 
   /* 6 días de gastos de ejemplo (el último día, ayer; hoy queda libre para registrar).
-     Hoy se cargan con pages/inicio.html#ejemplo; después los cargará el botón
-     "Cargar datos de ejemplo" de Perfil. */
+     Los carga el botón "Cargar datos de ejemplo" de Perfil. */
   gastosEjemplo: [
     { id: 1, nota: "Libros", monto: 32000, categoria: "Educación", dia: diaHace(6), creado: diaHace(6) + "T12:00:00" },
     { id: 2, nota: "Transmilenio", monto: 6400, categoria: "Transporte", dia: diaHace(5), creado: diaHace(5) + "T08:00:00" },
