@@ -1,19 +1,84 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta name="theme-color" content="#F6F2EA" />
-<meta name="description" content="NEXO: tu dinero, pero con alguien de tu lado." />
-<title>NEXO · Tu copiloto financiero</title>
-<link rel="stylesheet" href="../css/prototipo.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#F6F2EA">
+  <meta name="description" content="NEXO: tu dinero, pero con alguien de tu lado.">
+  <title>Nueva pregunta · NEXO</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/styles.css">
 </head>
-<body data-pagina="foro-nueva">
-<div id="root">
-<div data-estado="form"><div class="app-shell"><main class="main plain"><div class="screen"><div class="screen-top"><a class="back-btn" aria-label="Volver" href="foro.html" data-era-boton><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg></a><h1 class="screen-title">Nueva pregunta</h1><span class="spacer"></span></div><div class="stack"><form class="stack" novalidate=""><div class="field"><label for="q--form">Tu pregunta</label><textarea id="q--form" class="textarea" placeholder="Escribe tu pregunta sobre tu plata…" aria-invalid="false"></textarea><span class="small muted">Recuerda seguir las normas: sin enlaces, teléfonos, claves ni promociones.</span></div><div class="field"><label>Categoría</label><div class="chips"><button type="button" class="chip on" aria-pressed="true" data-accion="chip-unico">Ahorro</button><button type="button" class="chip " aria-pressed="false" data-accion="chip-unico">Presupuesto</button><button type="button" class="chip " aria-pressed="false" data-accion="chip-unico">Crédito</button><button type="button" class="chip " aria-pressed="false" data-accion="chip-unico">Hábitos</button><button type="button" class="chip " aria-pressed="false" data-accion="chip-unico">Primer empleo</button><button type="button" class="chip " aria-pressed="false" data-accion="chip-unico">Otra</button></div></div><button class="btn primary full" type="submit" data-accion="publicar">Publicar</button></form></div></div></main></div><div class="toast-zone" aria-live="polite"></div></div>
-<div data-estado="invalida" hidden><div class="app-shell"><main class="main plain"><div class="screen"><div class="screen-top"><a class="back-btn" aria-label="Volver" href="foro.html" data-era-boton><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg></a><h1 class="screen-title">Nueva pregunta</h1><span class="spacer"></span></div><div class="stack"><form class="stack" novalidate=""><div class="alert warn" role="alert"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-triangle-alert"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg><div>No se permiten enlaces en las preguntas.</div></div><div class="field"><label for="q--invalida">Tu pregunta</label><textarea id="q--invalida" class="textarea" placeholder="Escribe tu pregunta sobre tu plata…" aria-invalid="true">Mira www.ejemplo.com</textarea><span class="small muted">Recuerda seguir las normas: sin enlaces, teléfonos, claves ni promociones.</span></div><div class="field"><label>Categoría</label><div class="chips"><button type="button" class="chip on" aria-pressed="true" data-accion="chip-unico">Ahorro</button><button type="button" class="chip " aria-pressed="false" data-accion="chip-unico">Presupuesto</button><button type="button" class="chip " aria-pressed="false" data-accion="chip-unico">Crédito</button><button type="button" class="chip " aria-pressed="false" data-accion="chip-unico">Hábitos</button><button type="button" class="chip " aria-pressed="false" data-accion="chip-unico">Primer empleo</button><button type="button" class="chip " aria-pressed="false" data-accion="chip-unico">Otra</button></div></div><button class="btn primary full" type="submit" data-accion="publicar">Publicar</button></form></div></div></main></div><div class="toast-zone" aria-live="polite"></div></div>
-<div data-estado="publicada" hidden><div class="app-shell"><main class="main plain"><div class="screen"><div class="screen-top"><a class="back-btn" aria-label="Volver" href="foro.html" data-era-boton><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg></a><h1 class="screen-title">Pregunta publicada</h1><span class="spacer"></span></div><div class="stack"><div class="success-mark"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"></path></svg></div><div class="card"><p style="margin: 0px;"><span data-rellena="pregunta">¿Cómo ahorro para una moto si gano el mínimo?</span></p></div><div class="alert ok" role="status"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-check"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg><div>Otras personas de la comunidad ya pueden responderte. Te avisamos aquí cuando llegue una respuesta.</div></div><p class="small muted" style="margin: 0px;">En esta demostración, las respuestas son de ejemplo y llegan a los pocos segundos.</p><a class="btn primary full" href="foro.html" data-era-boton>Ver respuestas</a><a class="btn ghost full" href="foro.html" data-era-boton>Volver a la comunidad</a></div></div></main></div><div class="toast-zone" aria-live="polite"></div></div>
-</div>
-<script src="../js/prototipo.js"></script>
+<body class="pagina-app" data-pantalla="foro-nueva">
+
+  <main class="pantalla">
+    <div class="pantalla__contenido">
+
+      <!-- F3.3 · Escribir pregunta nueva (y F3.3b · Pregunta no válida) -->
+      <form class="paso" id="paso-formulario" novalidate>
+        <header class="barra-interna">
+          <a class="boton-icono" href="foro.html" aria-label="Volver a la comunidad">
+            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+          </a>
+          <h1 class="titulo-interno">Nueva pregunta</h1>
+        </header>
+
+        <div class="alerta alerta--aviso" id="alerta-pregunta" role="alert" hidden>
+          <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+          <span id="alerta-pregunta-texto"></span>
+        </div>
+
+        <div class="grupo-campo">
+          <label class="etiqueta-campo" for="campo-pregunta">Tu pregunta</label>
+          <textarea class="campo campo--area" id="campo-pregunta" placeholder="Escribe tu pregunta sobre tu plata…" aria-invalid="false"></textarea>
+          <p class="texto-suave texto-pequeno">Recuerda seguir las normas: sin enlaces, teléfonos, claves ni promociones.</p>
+        </div>
+
+        <div class="grupo-campo" role="group" aria-labelledby="etiqueta-categoria-foro">
+          <span class="etiqueta-campo" id="etiqueta-categoria-foro">Categoría</span>
+          <div class="chips" id="chips-categoria"></div>
+        </div>
+
+        <div class="paso__fondo">
+          <button type="submit" class="boton boton--completo">Publicar</button>
+        </div>
+      </form>
+
+      <!-- F3.4 · Pregunta publicada -->
+      <section class="paso" id="paso-publicada" aria-label="Pregunta publicada" hidden>
+        <header class="barra-interna">
+          <a class="boton-icono" href="foro.html" aria-label="Volver a la comunidad">
+            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+          </a>
+          <h1 class="titulo-interno">Pregunta publicada</h1>
+        </header>
+
+        <div class="marca-exito">
+          <svg class="icono icono--xl" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+        </div>
+
+        <div class="tarjeta">
+          <p id="publicada-texto"></p>
+        </div>
+
+        <div class="alerta alerta--exito" role="status">
+          <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+          <span>Otras personas de la comunidad ya pueden responderte. Te avisamos aquí cuando llegue una respuesta.</span>
+        </div>
+
+        <p class="texto-suave texto-pequeno">En esta demostración, las respuestas son de ejemplo y llegan a los pocos segundos.</p>
+
+        <div class="paso__fondo">
+          <a class="boton boton--completo" id="boton-ver-respuestas" href="foro.html">Ver respuestas</a>
+          <a class="boton boton--texto boton--completo" href="foro.html">Volver a la comunidad</a>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script src="../js/data.js"></script>
+  <script src="../js/app.js"></script>
 </body>
 </html>

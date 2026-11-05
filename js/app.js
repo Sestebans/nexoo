@@ -787,6 +787,69 @@ function pantallaCopiloto() {
 }
 
 
+/* ---------- Entregas programadas: la respuesta de ejemplo y su aviso ---------- */
+
+var SEGUNDOS_PARA_LA_RESPUESTA = 7;      /* a los pocos segundos de publicar llega la respuesta de ejemplo */
+var entregasEnEspera = {};               /* para no programar dos veces la misma entrega */
+
+/* Pone al día el número rojo de la campana, si la página tiene campana */
+function actualizarContadorAvisos() {
+  var contador = document.getElementById("contador-avisos");
+  var enlace = document.getElementById("enlace-avisos");
+  if (!contador || !enlace) return;
+  var sinVer = obtenerDatos("avisos").filter(function (a) { return !a.visto; }).length;
+  contador.hidden = sinVer === 0;
+  contador.textContent = sinVer;
+  enlace.setAttribute("aria-label", sinVer ? "Avisos, " + sinVer + " nuevos" : "Avisos");
+}
+
+/* Entrega las respuestas y avisos cuyo momento ya llegó. Corre al abrir cualquier página,
+   así que si la persona cambió de pantalla antes de tiempo, igual le llegan. */
+function entregarPendientes() {
+  var cola = obtenerDatos("entregasProgramadas");
+  var ahora = Date.now();
+  var vencidas = cola.filter(function (e) { return e.entregarEn <= ahora; });
+  if (vencidas.length === 0) return false;
+
+  var respuestas = obtenerDatos("respuestas");
+  var avisos = obtenerDatos("avisos");
+  var plantilla = obtenerDatos("respuestasDeEjemplo")[0];
+  vencidas.forEach(function (e) {
+    respuestas.push({
+      id: "r" + ahora.toString(36) + e.id,
+      preguntaId: e.preguntaId,
+      autor: plantilla.autor,
+      texto: plantilla.texto,
+      utiles: 0,
+      marcadaPorMi: false,
+      ejemplo: true
+    });
+    avisos.unshift({
+      id: avisos.reduce(function (mayor, a) { return Math.max(mayor, a.id); }, 0) + 1,
+      texto: "Nueva respuesta a tu pregunta",
+      destino: "foro-detalle.html#" + e.preguntaId,
+      visto: false
+    });
+  });
+  guardarDatos("respuestas", respuestas);
+  guardarDatos("avisos", avisos);
+  guardarDatos("entregasProgramadas", cola.filter(function (e) { return e.entregarEn > ahora; }));
+
+  actualizarContadorAvisos();
+  document.dispatchEvent(new CustomEvent("nexo:entrega"));   /* las pantallas abiertas se actualizan */
+  return true;
+}
+
+/* Si todavía faltan entregas, deja un temporizador para cuando les toque */
+function programarEntregas() {
+  obtenerDatos("entregasProgramadas").forEach(function (e) {
+    if (entregasEnEspera[e.id]) return;
+    entregasEnEspera[e.id] = true;
+    window.setTimeout(entregarPendientes, Math.max(0, e.entregarEn - Date.now()) + 50);
+  });
+}
+
+
 /* ---------- Pantalla: pages/foro.html (F3.1) ---------- */
 
 /* La racha y los avisos sin ver de la barra superior (campana y chip de racha) */
@@ -878,6 +941,13 @@ function pantallaForo() {
 
   campoBusqueda.addEventListener("input", pintarLista);
   pintarLista();
+
+  /* Si llega una respuesta mientras se ve el feed, se actualizan los números */
+  document.addEventListener("nexo:entrega", function () {
+    preguntas = obtenerDatos("preguntas");
+    respuestas = obtenerDatos("respuestas");
+    pintarLista();
+  });
 }
 
 
@@ -1013,6 +1083,164 @@ function pantallaForoDetalle() {
   });
 
   pintarRespuestas();
+
+  /* Si llega una respuesta mientras se lee la pregunta, aparece en la lista */
+  document.addEventListener("nexo:entrega", function () {
+    respuestas = obtenerDatos("respuestas");
+    pintarRespuestas();
+  });
+}
+
+
+/* ---------- Pantalla: pages/foro-nueva.html (F3.3, F3.3b y F3.4) ---------- */
+
+/* El título de la pregunta: su primera frase (hasta 80 caracteres) */
+function tituloDePregunta(texto) {
+  var t = texto.trim();
+  var frase = t.match(/^[^?\n]{5,80}\??/);
+  return (frase ? frase[0] : t.slice(0, 80)).trim();
+}
+
+function pantallaForoNueva() {
+  var categorias = obtenerDatos("categoriasForo");
+  var pasoFormulario = document.getElementById("paso-formulario");
+  var pasoPublicada = document.getElementById("paso-publicada");
+  var campo = document.getElementById("campo-pregunta");
+  var alerta = document.getElementById("alerta-pregunta");
+  var chips = document.getElementById("chips-categoria");
+  var categoria = categorias[0].nombre;
+
+  /* --- Categorías: una sola, la primera viene marcada --- */
+  categorias.forEach(function (c) {
+    var chip = crearElemento("button", "chip", c.nombre);
+    chip.type = "button";
+    chip.setAttribute("data-valor", c.nombre);
+    marcarChip(chip, c.nombre === categoria);
+    chip.addEventListener("click", function () {
+      categoria = c.nombre;
+      Array.prototype.forEach.call(chips.children, function (otro) {
+        marcarChip(otro, otro.getAttribute("data-valor") === categoria);
+      });
+    });
+    chips.appendChild(chip);
+  });
+
+  /* --- Revisar lo escrito: si no sirve, se explica el motivo y se conserva el texto --- */
+  function mostrarMotivo(motivo) {
+    document.getElementById("alerta-pregunta-texto").textContent = motivo;
+    alerta.hidden = false;
+    campo.setAttribute("aria-invalid", "true");
+    campo.setAttribute("aria-describedby", "alerta-pregunta");
+  }
+  function quitarMotivo() {
+    alerta.hidden = true;
+    campo.setAttribute("aria-invalid", "false");
+    campo.removeAttribute("aria-describedby");
+  }
+
+  /* --- Pregunta publicada (F3.4) --- */
+  function mostrarPublicada(pregunta) {
+    document.getElementById("publicada-texto").textContent = pregunta.texto;
+    document.getElementById("boton-ver-respuestas").href = "foro-detalle.html#" + pregunta.id;
+    pasoFormulario.hidden = true;
+    pasoPublicada.hidden = false;
+    window.scrollTo(0, 0);
+  }
+
+  pasoFormulario.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var revision = validarTextoForo(campo.value);
+    if (!revision.valido) {
+      mostrarMotivo(revision.motivo);
+      return;
+    }
+    quitarMotivo();
+
+    var pregunta = {
+      id: "p" + Date.now().toString(36),
+      titulo: tituloDePregunta(campo.value),
+      texto: campo.value.trim(),
+      categoria: categoria,
+      autor: "Tú",
+      fecha: new Date().toISOString(),
+      ejemplo: false
+    };
+    guardarDatos("preguntas", [pregunta].concat(obtenerDatos("preguntas")));    /* la nueva va arriba */
+
+    /* A los pocos segundos llegan una respuesta de ejemplo y su aviso */
+    var cola = obtenerDatos("entregasProgramadas");
+    cola.push({
+      id: cola.reduce(function (mayor, x) { return Math.max(mayor, x.id); }, 0) + 1,
+      preguntaId: pregunta.id,
+      entregarEn: Date.now() + SEGUNDOS_PARA_LA_RESPUESTA * 1000
+    });
+    guardarDatos("entregasProgramadas", cola);
+    programarEntregas();
+
+    window.history.replaceState(null, "", "#publicada");
+    mostrarPublicada(pregunta);
+  });
+
+  /* --- Al abrir: foro-nueva.html#invalida y #publicada muestran esos estados --- */
+  var pedido = window.location.hash.replace("#", "");
+  if (pedido === "invalida") {
+    campo.value = "Mira www.ejemplo.com";
+    mostrarMotivo(validarTextoForo(campo.value).motivo);
+  } else if (pedido === "publicada") {
+    var ultima = obtenerDatos("preguntas").filter(function (p) { return p.autor === "Tú"; })[0];
+    if (ultima) mostrarPublicada(ultima);
+  }
+}
+
+
+/* ---------- Pantalla: pages/avisos.html (F3.4 y Avisos) ---------- */
+
+function pantallaAvisos() {
+  var avisos = obtenerDatos("avisos");
+  var lista = document.getElementById("lista-avisos");
+  var vacio = document.getElementById("avisos-vacio");
+  var botonTodo = document.getElementById("boton-marcar-todo");
+
+  function pintar() {
+    lista.replaceChildren();
+    vacio.hidden = avisos.length > 0;
+    avisos.forEach(function (a) {
+      var enlace = crearElemento("a", "tarjeta tarjeta--boton");
+      enlace.href = a.destino;
+      var fila = crearElemento("div", "fila");
+      var punto = crearElemento("span", "icono-recuadro icono-recuadro--acento", "•");
+      punto.setAttribute("aria-hidden", "true");
+      var cuerpo = crearElemento("div", "fila-lista__cuerpo pila");
+      cuerpo.appendChild(crearElemento("strong", "", a.texto));
+      cuerpo.appendChild(crearElemento("span", a.visto ? "etiqueta etiqueta--suave alinear-inicio" : "etiqueta alinear-inicio", a.visto ? "Vista" : "Nueva"));
+      fila.appendChild(punto);
+      fila.appendChild(cuerpo);
+      enlace.appendChild(fila);
+      /* Al tocarlo, este aviso queda visto y se sigue al link de la pregunta */
+      enlace.addEventListener("click", function () {
+        if (!a.visto) {
+          a.visto = true;
+          guardarDatos("avisos", avisos);
+        }
+      });
+      lista.appendChild(enlace);
+    });
+    botonTodo.hidden = !avisos.some(function (a) { return !a.visto; });
+  }
+
+  botonTodo.addEventListener("click", function () {
+    avisos.forEach(function (a) { a.visto = true; });
+    guardarDatos("avisos", avisos);
+    pintar();
+  });
+
+  /* Si llega un aviso mientras se mira la lista, aparece */
+  document.addEventListener("nexo:entrega", function () {
+    avisos = obtenerDatos("avisos");
+    pintar();
+  });
+
+  pintar();
 }
 
 
@@ -1693,10 +1921,14 @@ var PANTALLAS = {
   "racha": pantallaRacha,
   "copiloto": pantallaCopiloto,
   "foro": pantallaForo,
-  "foro-detalle": pantallaForoDetalle
+  "foro-detalle": pantallaForoDetalle,
+  "foro-nueva": pantallaForoNueva,
+  "avisos": pantallaAvisos
 };
 
 document.addEventListener("DOMContentLoaded", function () {
+  entregarPendientes();     /* lo que ya le tocaba llegar (aunque la persona haya cambiado de pantalla) */
+  programarEntregas();      /* y lo que todavía falta, para cuando le toque */
   var nombre = document.body.getAttribute("data-pantalla");
   if (PANTALLAS[nombre]) PANTALLAS[nombre]();
 });

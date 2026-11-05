@@ -78,6 +78,19 @@ const DATOS = {
      Empieza vacío. Por ahora solo guarda el consejo que da la recompensa. */
   mensajes: [],
 
+  /* Para la demostración de la comunidad: respuestas que "llegan solas" a los pocos
+     segundos de publicar una pregunta. Cada elemento de entregasProgramadas dice a cuál
+     pregunta le toca la respuesta y cuándo (en milisegundos). Empieza vacía.
+     Estas dos listas no están en spec.md. */
+  entregasProgramadas: [],
+  respuestasDeEjemplo: [
+    {
+      id: 1,
+      autor: "Laura G.",
+      texto: "Buena pregunta. A mí me ayudó anotar todo durante un mes para ver a dónde se iba la plata antes de decidir nada."
+    }
+  ],
+
   /* Categorías de las preguntas del foro (spec.md, Preguntas del foro > categoría) */
   categoriasForo: [
     { id: 1, nombre: "Ahorro" },

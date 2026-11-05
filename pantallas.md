@@ -45,9 +45,9 @@ El mapa de avance de la app: una fila por pantalla del `spec.md`, agrupadas por 
 |---|---|---|---|---|---|
 | F3.1 Feed de preguntas | `pages/foro.html` | ✅ | ✅ | ✅ | ✅ |
 | F3.2 Detalle de pregunta | `pages/foro-detalle.html` (`#seed1`, `#seed2`, `#seed3`) | ✅ | ✅ | ✅ | ✅ |
-| F3.3 Escribir pregunta nueva | `pages/foro-nueva.html` | ✅ | ⬜ | ⬜ | ⬜ |
-| F3.3b Pregunta no válida | `pages/foro-nueva.html#invalida` | ✅ | ⬜ | ⬜ | ⬜ |
-| F3.4 Pregunta publicada y aviso de respuesta | `pages/foro-nueva.html#publicada` y `pages/avisos.html#con-aviso` | ✅ | ⬜ | ⬜ | ⬜ |
+| F3.3 Escribir pregunta nueva | `pages/foro-nueva.html` | ✅ | ✅ | ✅ | ✅ |
+| F3.3b Pregunta no válida | `pages/foro-nueva.html#invalida` | ✅ | ✅ | ✅ | ✅ |
+| F3.4 Pregunta publicada y aviso de respuesta | `pages/foro-nueva.html#publicada` y `pages/avisos.html#con-aviso` | ✅ | ✅ | ✅ | ✅ |
 
 ## Tramo 5 · Otras pantallas
 
@@ -57,4 +57,4 @@ El mapa de avance de la app: una fila por pantalla del `spec.md`, agrupadas por 
 | Metas | `pages/metas.html` | ✅ | ⬜ | ⬜ | ⬜ |
 | Crear meta | `pages/crear-meta.html` | ✅ | ⬜ | ⬜ | ⬜ |
 | Perfil | `pages/perfil.html` | ✅ | ⬜ | ⬜ | ⬜ |
-| Avisos | `pages/avisos.html` | ✅ | ⬜ | ⬜ | ⬜ |
+| Avisos | `pages/avisos.html` | ✅ | ✅ | ✅ | ✅ |
