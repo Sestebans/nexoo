@@ -4,7 +4,7 @@ El mapa de avance de la app: una fila por pantalla del `spec.md`, agrupadas por 
 
 **Cómo leer las columnas**
 - **Separada:** la pantalla ya tiene su propia página y se ve igual que en `disenos/prototipo.html`.
-- **Con kit:** la pantalla ya usa solo el design kit (`tokens.css` y `components.css`) y ya no depende de `css/prototipo.css`.
+- **Con kit:** la pantalla ya usa solo el design kit (`tokens.css` y `components.css`).
 - **Datos en data.js:** los datos de la pantalla ya salen de `js/data.js` y no están escritos en el HTML.
 - **Revisada vs spec:** alguien comparó la pantalla con su sección de `spec.md` y cumple su "Está lista cuando".
 

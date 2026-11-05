@@ -21,7 +21,6 @@ NEXO: copiloto financiero que ayuda a entender y manejar el dinero con respuesta
 - docs/: documentos del proyecto, como el brief y el benchmark (brief.pdf).
 - css/: estilos. tokens.css (decisiones base), components.css (componentes) y styles.css (estilos generales de las pantallas).
 - js/: código. app.js (comportamiento) y data.js (datos simulados, separados del diseño).
-- css/prototipo.css y js/prototipo.js: andamio temporal del prototipo; no agregues nada ahí.
 - index.html: la pantalla de inicio, la puerta de entrada de la app. Las demás pantallas van en la carpeta pages/.
 - Nombres de archivos y carpetas: minúsculas, sin tildes, ñ ni espacios, con guiones.
 

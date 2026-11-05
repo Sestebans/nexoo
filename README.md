@@ -25,8 +25,8 @@ Jóvenes de 18 a 25 años con ingresos propios que quieren entender las finanzas
 - `disenos/`: el prototipo de la app (`prototipo.html`), que se abre en el navegador.
 - `assets/`: las imágenes de la app. Hoy tiene las 3 ilustraciones del carrusel de bienvenida (`onboarding-1.svg`, `onboarding-2.svg` y `onboarding-3.svg`). En `assets/fuentes/` están las dos fuentes (Bricolage Grotesque y DM Sans), para que la app no dependa de internet.
 - `docs/`: documentos del proyecto: el brief y el benchmark (`brief.pdf`).
-- `css/`: los estilos. `tokens.css` tiene los colores, letras y medidas, `components.css` tiene los botones, tarjetas, campos y demás piezas del design kit, y `styles.css` tiene el layout general de las pantallas. `prototipo.css` es un andamio temporal que se borra cuando todas las pantallas usen el kit.
-- `js/`: el código. `data.js` tiene los datos simulados, `app.js` tiene el comportamiento de cada pantalla y `prototipo.js` es un andamio temporal que se borra junto con `prototipo.css`.
+- `css/`: los estilos. `tokens.css` tiene los colores, letras y medidas, `components.css` tiene los botones, tarjetas, campos y demás piezas del design kit, y `styles.css` tiene el layout general de las pantallas.
+- `js/`: el código. `data.js` tiene los datos simulados, `app.js` tiene el comportamiento de cada pantalla.
 - `index.html` y `pages/`: las pantallas de la app. `index.html` es la de bienvenida y las demás están en `pages/`.
 - `pantallas.md`: el mapa de avance, con el estado de cada pantalla.
 - `componentes.html`: el catálogo con todas las piezas del design kit. Se abre con doble clic en el navegador.
