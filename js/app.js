@@ -253,6 +253,7 @@ var ICONOS = {
   meta: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
   check: '<path d="M20 6 9 17l-5-5"/>',
   mensaje: '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>',
+  pulgar: '<path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/>',
   candado: '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
   regalo: '<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>',
   alerta: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
@@ -877,6 +878,141 @@ function pantallaForo() {
 
   campoBusqueda.addEventListener("input", pintarLista);
   pintarLista();
+}
+
+
+/* ---------- Pantalla: pages/foro-detalle.html (F3.2) ---------- */
+
+/* Reglas simples de moderación para lo que se escribe en la comunidad
+   (preguntas y respuestas). Devuelve { valido, motivo }. */
+function validarTextoForo(texto) {
+  var t = String(texto || "").trim();
+  var motivo = "";
+  if (t.length < 15) motivo = "Cuéntanos un poco más. Escribe al menos 15 caracteres.";
+  else if (t.length > 500) motivo = "Es muy larga. Resúmela en menos de 500 caracteres.";
+  else if (/[\w.+-]+@[\w-]+\.[\w.]+/.test(t)) motivo = "No compartas correos en la comunidad.";   /* antes que los enlaces: un correo .com no es un enlace */
+  else if (/https?:\/\/|www\.|\.com\b|\.co\b/i.test(t)) motivo = "No se permiten enlaces en las preguntas.";
+  else if (/\b3\d{2}[\s-]?\d{3}[\s-]?\d{4}\b/.test(t)) motivo = "No compartas teléfonos en la comunidad.";
+  else if (/contrase[ñn]a|\bclave\b|\bcvv\b|\bpin\b|n[uú]mero de (tarjeta|cuenta)/i.test(t)) motivo = "Nunca compartas claves ni datos de tarjetas o cuentas.";
+  else if (/ganancias? garantizad|doblar? tu (plata|dinero)|inversi[oó]n segura|escr[ií]beme al privado|gana dinero f[aá]cil|pr[eé]stamos? inmediato/i.test(t)) motivo = "Parece una promoción. En esta comunidad solo se hacen preguntas y se comparten experiencias.";
+  return { valido: motivo === "", motivo: motivo };
+}
+
+/* "2026-10-05T15:00:00Z" -> "hoy" o "hace 29 días" */
+function fechaRelativa(iso) {
+  var dias = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+  return dias <= 0 ? "hoy" : "hace " + dias + (dias === 1 ? " día" : " días");
+}
+
+/* La línea "inicial · autor · cuándo · Ejemplo" de una pregunta o respuesta */
+function crearLineaDeAutor(autor, cuando, esEjemplo) {
+  var linea = crearElemento("div", "fila fila--ajusta");
+  var inicial = crearElemento("span", "avatar", autor.trim().charAt(0).toUpperCase());
+  inicial.setAttribute("aria-hidden", "true");
+  linea.appendChild(inicial);
+  linea.appendChild(crearElemento("span", "texto-suave texto-pequeno", cuando ? autor + " · " + cuando : autor));
+  if (esEjemplo) linea.appendChild(crearElemento("span", "etiqueta etiqueta--suave", "Ejemplo"));
+  return linea;
+}
+
+function pantallaForoDetalle() {
+  var preguntas = obtenerDatos("preguntas");
+  var respuestas = obtenerDatos("respuestas");
+  var id = window.location.hash.replace("#", "");
+  var pregunta = preguntas.filter(function (p) { return p.id === id; })[0];
+
+  if (!pregunta) {
+    document.getElementById("paso-no-encontrada").hidden = false;
+    return;
+  }
+  document.getElementById("paso-pregunta").hidden = false;
+
+  /* --- La pregunta --- */
+  document.getElementById("pregunta-autor").replaceWith(crearLineaDeAutor(pregunta.autor, fechaRelativa(pregunta.fecha), pregunta.ejemplo));
+  document.getElementById("pregunta-titulo").textContent = pregunta.titulo;
+  var texto = document.getElementById("pregunta-texto");
+  texto.textContent = pregunta.texto;
+  texto.hidden = pregunta.texto === pregunta.titulo;       /* si es igual al título, no se repite */
+
+  /* --- Las respuestas --- */
+  var lista = document.getElementById("lista-respuestas");
+
+  function respuestasDeEstaPregunta() {
+    return respuestas.filter(function (r) { return r.preguntaId === pregunta.id; });
+  }
+
+  function textoUtil(r) { return "Marcar como útil · " + r.utiles; }
+
+  function crearRespuesta(r) {
+    var fila = crearElemento("div", "fila-lista");
+    var cuerpo = crearElemento("div", "fila-lista__cuerpo pila");
+    cuerpo.appendChild(crearLineaDeAutor(r.autor, "", r.ejemplo));
+    cuerpo.appendChild(crearElemento("p", "", r.texto));
+
+    var util = crearElemento("button", "boton-util alinear-inicio");
+    util.type = "button";
+    util.appendChild(crearIcono("pulgar", "icono--sm"));
+    var etiqueta = document.createTextNode(textoUtil(r));
+    util.appendChild(etiqueta);
+    function pintarUtil() {
+      util.classList.toggle("boton-util--activo", r.marcadaPorMi);
+      util.setAttribute("aria-pressed", r.marcadaPorMi ? "true" : "false");
+      etiqueta.nodeValue = textoUtil(r);
+    }
+    util.addEventListener("click", function () {
+      r.marcadaPorMi = !r.marcadaPorMi;
+      r.utiles = Math.max(0, r.utiles + (r.marcadaPorMi ? 1 : -1));
+      guardarDatos("respuestas", respuestas);
+      pintarUtil();
+    });
+    pintarUtil();
+    cuerpo.appendChild(util);
+
+    fila.appendChild(cuerpo);
+    return fila;
+  }
+
+  function pintarRespuestas() {
+    var propias = respuestasDeEstaPregunta();
+    document.getElementById("respuestas-titulo").textContent = "Respuestas (" + propias.length + ")";
+    document.getElementById("sin-respuestas").hidden = propias.length > 0;
+    lista.replaceChildren();
+    propias.forEach(function (r) { lista.appendChild(crearRespuesta(r)); });
+  }
+
+  /* --- Responder --- */
+  var campo = document.getElementById("campo-respuesta");
+  var alerta = document.getElementById("alerta-respuesta");
+
+  document.getElementById("formulario-respuesta").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var revision = validarTextoForo(campo.value);
+    if (!revision.valido) {
+      document.getElementById("alerta-respuesta-texto").textContent = revision.motivo;
+      alerta.hidden = false;
+      campo.setAttribute("aria-invalid", "true");
+      campo.setAttribute("aria-describedby", "alerta-respuesta");
+      return;                                   /* lo escrito se conserva */
+    }
+    alerta.hidden = true;
+    campo.setAttribute("aria-invalid", "false");
+    campo.removeAttribute("aria-describedby");
+    respuestas.push({
+      id: "r" + Date.now().toString(36),
+      preguntaId: pregunta.id,
+      autor: "Tú",
+      texto: campo.value.trim(),
+      utiles: 0,
+      marcadaPorMi: false,
+      ejemplo: false
+    });
+    guardarDatos("respuestas", respuestas);
+    campo.value = "";
+    pintarRespuestas();
+    if (lista.lastElementChild && lista.lastElementChild.scrollIntoView) lista.lastElementChild.scrollIntoView({ block: "nearest" });
+  });
+
+  pintarRespuestas();
 }
 
 
@@ -1556,7 +1692,8 @@ var PANTALLAS = {
   "meta-detalle": pantallaMetaDetalle,
   "racha": pantallaRacha,
   "copiloto": pantallaCopiloto,
-  "foro": pantallaForo
+  "foro": pantallaForo,
+  "foro-detalle": pantallaForoDetalle
 };
 
 document.addEventListener("DOMContentLoaded", function () {

@@ -44,7 +44,7 @@ El mapa de avance de la app: una fila por pantalla del `spec.md`, agrupadas por 
 | Pantalla | Archivo | Separada | Con kit | Datos en data.js | Revisada vs spec |
 |---|---|---|---|---|---|
 | F3.1 Feed de preguntas | `pages/foro.html` | ✅ | ✅ | ✅ | ✅ |
-| F3.2 Detalle de pregunta | `pages/foro-detalle.html` (`#seed1`, `#seed2`, `#seed3`) | ✅ | ⬜ | ⬜ | ⬜ |
+| F3.2 Detalle de pregunta | `pages/foro-detalle.html` (`#seed1`, `#seed2`, `#seed3`) | ✅ | ✅ | ✅ | ✅ |
 | F3.3 Escribir pregunta nueva | `pages/foro-nueva.html` | ✅ | ⬜ | ⬜ | ⬜ |
 | F3.3b Pregunta no válida | `pages/foro-nueva.html#invalida` | ✅ | ⬜ | ⬜ | ⬜ |
 | F3.4 Pregunta publicada y aviso de respuesta | `pages/foro-nueva.html#publicada` y `pages/avisos.html#con-aviso` | ✅ | ⬜ | ⬜ | ⬜ |
