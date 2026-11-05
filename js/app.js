@@ -850,6 +850,165 @@ function programarEntregas() {
 }
 
 
+/* ---------- Un aviso que viaja a la siguiente pantalla ("Meta creada") ---------- */
+
+var CLAVE_AVISO_PENDIENTE = "nexo:avisoPendiente";
+
+/* Deja escrito un aviso para mostrarlo en la próxima pantalla que se abra */
+function dejarAvisoParaSiguientePantalla(texto) {
+  try { window.localStorage.setItem(CLAVE_AVISO_PENDIENTE, texto); } catch (e) { /* sin guardado: no hay aviso */ }
+}
+
+/* Lee ese aviso y lo borra, para que salga una sola vez ("" si no hay) */
+function tomarAvisoPendiente() {
+  try {
+    var texto = window.localStorage.getItem(CLAVE_AVISO_PENDIENTE);
+    if (texto) window.localStorage.removeItem(CLAVE_AVISO_PENDIENTE);
+    return texto || "";
+  } catch (e) { return ""; }
+}
+
+
+/* ---------- Pantalla: pages/metas.html (Metas) ---------- */
+
+function pantallaMetas() {
+  var metas = obtenerDatos("metas");
+  pintarBarraSuperior(obtenerDatos("gastos"), obtenerDatos("avisos"), new Date());
+
+  var avisoPendiente = tomarAvisoPendiente();
+  if (avisoPendiente) mostrarAvisoTemporal(document.getElementById("aviso-metas"), avisoPendiente);
+
+  var lista = document.getElementById("lista-metas");
+
+  if (metas.length === 0) {
+    var vacia = crearElemento("div", "tarjeta tarjeta--vacia pila");
+    vacia.appendChild(crearElemento("p", "", "Tu primera meta empieza aquí."));
+    var crear = crearElemento("a", "boton boton--secundario", "Crear una meta");
+    crear.href = "crear-meta.html";
+    vacia.appendChild(crear);
+    lista.appendChild(vacia);
+    return;
+  }
+
+  metas.forEach(function (m) {
+    var cumplida = m.ahorrado >= m.montoObjetivo;
+    var porcentaje = Math.min(100, Math.round(m.ahorrado / m.montoObjetivo * 100));
+
+    var tarjeta = crearElemento("a", "tarjeta tarjeta--boton");
+    tarjeta.href = "meta-detalle.html?id=" + m.id;
+    var cuerpo = crearElemento("div", "pila");
+
+    var encabezado = crearElemento("div", "fila");
+    var icono = crearElemento("span", "icono-recuadro icono-recuadro--acento");
+    icono.appendChild(crearIcono("meta"));
+    var nombre = crearElemento("div", "fila-lista__cuerpo pila");
+    nombre.appendChild(crearElemento("h2", "titulo-tarjeta", m.nombre));
+    nombre.appendChild(crearElemento("span", "texto-suave texto-pequeno", cumplida ? "Meta cumplida" : "Meta de ahorro"));
+    var etiqueta = crearElemento("span", cumplida ? "etiqueta etiqueta--oscura" : "etiqueta");
+    if (cumplida) {
+      etiqueta.appendChild(crearIcono("check", "icono--sm"));
+      etiqueta.appendChild(document.createTextNode("Lista"));
+    } else {
+      etiqueta.textContent = porcentaje + "%";
+    }
+    encabezado.appendChild(icono);
+    encabezado.appendChild(nombre);
+    encabezado.appendChild(etiqueta);
+    cuerpo.appendChild(encabezado);
+
+    var montos = crearElemento("div", "fila fila--ajusta");
+    montos.appendChild(crearElemento("strong", "", pesos(m.ahorrado)));
+    montos.appendChild(crearElemento("span", "espaciador"));
+    montos.appendChild(crearElemento("span", "texto-suave texto-pequeno", "de " + pesos(m.montoObjetivo)));
+    cuerpo.appendChild(montos);
+
+    var barra = crearElemento("div", "barra-progreso");
+    barra.style.setProperty("--progreso", porcentaje + "%");
+    barra.setAttribute("role", "img");
+    barra.setAttribute("aria-label", "Llevas el " + porcentaje + "% de esta meta");
+    barra.appendChild(crearElemento("span", "barra-progreso__relleno"));
+    cuerpo.appendChild(barra);
+
+    tarjeta.appendChild(cuerpo);
+    lista.appendChild(tarjeta);
+  });
+}
+
+
+/* ---------- Pantalla: pages/crear-meta.html (Crear meta) ---------- */
+
+function pantallaCrearMeta() {
+  var campoNombre = document.getElementById("campo-nombre");
+  var campoMonto = document.getElementById("campo-monto");
+  var errorNombre = document.getElementById("error-nombre");
+  var errorMonto = document.getElementById("error-monto");
+  var contenedorIdeas = document.getElementById("chips-ideas");
+
+  conectarMontoEnPesos(campoMonto);
+
+  /* --- Ideas rápidas: tocar una escribe su nombre en el campo --- */
+  function marcarIdea() {
+    Array.prototype.forEach.call(contenedorIdeas.children, function (chip) {
+      marcarChip(chip, chip.getAttribute("data-valor") === campoNombre.value);
+    });
+  }
+  obtenerDatos("ideasMeta").forEach(function (idea) {
+    var chip = crearElemento("button", "chip", idea.nombre);
+    chip.type = "button";
+    chip.setAttribute("data-valor", idea.nombre);
+    marcarChip(chip, false);
+    chip.addEventListener("click", function () {
+      campoNombre.value = idea.nombre;
+      marcarIdea();
+      mostrarError(campoNombre, errorNombre, false);
+    });
+    contenedorIdeas.appendChild(chip);
+  });
+
+  /* --- Mensajes de error --- */
+  function mostrarError(campo, mensaje, hay) {
+    campo.classList.toggle("campo--error", hay);
+    campo.setAttribute("aria-invalid", hay ? "true" : "false");
+    if (hay) campo.setAttribute("aria-describedby", mensaje.id);
+    else campo.removeAttribute("aria-describedby");
+    mensaje.hidden = !hay;
+  }
+
+  function nombreValido() { return campoNombre.value.trim().length >= 2; }
+  function montoValido() { return Number(soloNumeros(campoMonto.value)) > 0; }
+
+  campoNombre.addEventListener("input", function () {
+    marcarIdea();
+    if (nombreValido()) mostrarError(campoNombre, errorNombre, false);
+  });
+  campoMonto.addEventListener("input", function () {
+    if (montoValido()) mostrarError(campoMonto, errorMonto, false);
+  });
+
+  /* --- Crear la meta --- */
+  document.getElementById("paso-crear").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var sinNombre = !nombreValido();
+    var sinMonto = !montoValido();
+    mostrarError(campoNombre, errorNombre, sinNombre);
+    mostrarError(campoMonto, errorMonto, sinMonto);
+    if (sinNombre) { campoNombre.focus(); return; }
+    if (sinMonto) { campoMonto.focus(); return; }
+
+    var metas = obtenerDatos("metas");
+    metas.push({
+      id: metas.reduce(function (mayor, m) { return Math.max(mayor, m.id); }, 0) + 1,
+      nombre: campoNombre.value.trim(),
+      montoObjetivo: Number(soloNumeros(campoMonto.value)),
+      ahorrado: 0
+    });
+    guardarDatos("metas", metas);
+    dejarAvisoParaSiguientePantalla("Meta creada");
+    window.location.href = "metas.html";
+  });
+}
+
+
 /* ---------- Pantalla: pages/foro.html (F3.1) ---------- */
 
 /* La racha y los avisos sin ver de la barra superior (campana y chip de racha) */
@@ -1923,7 +2082,9 @@ var PANTALLAS = {
   "foro": pantallaForo,
   "foro-detalle": pantallaForoDetalle,
   "foro-nueva": pantallaForoNueva,
-  "avisos": pantallaAvisos
+  "avisos": pantallaAvisos,
+  "metas": pantallaMetas,
+  "crear-meta": pantallaCrearMeta
 };
 
 document.addEventListener("DOMContentLoaded", function () {

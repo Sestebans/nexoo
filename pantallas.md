@@ -54,7 +54,7 @@ El mapa de avance de la app: una fila por pantalla del `spec.md`, agrupadas por 
 | Pantalla | Archivo | Separada | Con kit | Datos en data.js | Revisada vs spec |
 |---|---|---|---|---|---|
 | Lista de gastos (editar y eliminar) | `pages/gastos.html` (`#editar`, `#eliminar`) | ✅ | ⬜ | ⬜ | ⬜ |
-| Metas | `pages/metas.html` | ✅ | ⬜ | ⬜ | ⬜ |
-| Crear meta | `pages/crear-meta.html` | ✅ | ⬜ | ⬜ | ⬜ |
+| Metas | `pages/metas.html` | ✅ | ✅ | ✅ | ✅ |
+| Crear meta | `pages/crear-meta.html` | ✅ | ✅ | ✅ | ✅ |
 | Perfil | `pages/perfil.html` | ✅ | ⬜ | ⬜ | ⬜ |
 | Avisos | `pages/avisos.html` | ✅ | ✅ | ✅ | ✅ |
