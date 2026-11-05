@@ -493,7 +493,7 @@ function pantallaInicio() {
     var estilo = ESTILO_CATEGORIA[g.categoria] || ESTILO_CATEGORIA["Otro"];
     var nombre = g.nota || g.categoria;
     var fila = crearElemento("a", "fila-lista fila-lista--boton");
-    fila.href = "gastos.html#editar";
+    fila.href = "gastos.html#editar-" + g.id;
     fila.setAttribute("aria-label", nombre + ", " + pesos(g.monto) + ". Toca para editar");
     var icono = crearElemento("span", "icono-recuadro icono-recuadro--categoria icono-recuadro--" + estilo.clase);
     icono.appendChild(crearIcono(estilo.icono));
@@ -1558,13 +1558,25 @@ function conectarMontoEnPesos(campo) {
   });
 }
 
-/* Muestra un aviso corto dentro de la página y lo quita a los 4 segundos */
+/* Muestra un aviso corto dentro de la página y lo quita a los 4 segundos.
+   Si se pasa una acción ({ texto, alHacer }), el aviso trae un botón (por ejemplo
+   "Deshacer") y dura 7 segundos para dar tiempo de tocarlo. */
 var temporizadorAviso = null;
-function mostrarAvisoTemporal(contenedor, textoAviso) {
+function mostrarAvisoTemporal(contenedor, textoAviso, accion) {
   contenedor.querySelector("span").textContent = textoAviso;
+  var botonAccion = contenedor.querySelector(".aviso-temporal__accion");
+  if (botonAccion) {
+    botonAccion.hidden = !accion;
+    botonAccion.textContent = accion ? accion.texto : "";
+    botonAccion.onclick = accion ? function () {
+      window.clearTimeout(temporizadorAviso);
+      contenedor.hidden = true;
+      accion.alHacer();
+    } : null;
+  }
   contenedor.hidden = false;
   window.clearTimeout(temporizadorAviso);
-  temporizadorAviso = window.setTimeout(function () { contenedor.hidden = true; }, 4000);
+  temporizadorAviso = window.setTimeout(function () { contenedor.hidden = true; }, accion ? 7000 : 4000);
 }
 
 function pantallaMetaDetalle() {
@@ -2070,12 +2082,340 @@ function pantallaRegistrarGasto() {
 }
 
 
+/* ---------- Pantalla: pages/gastos.html (Lista de gastos, editar y eliminar) ---------- */
+
+var MESES_CORTOS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+
+/* "2026-11-01" -> { dia: 1, mes: "nov" } */
+function partesDeDia(clave) {
+  var partes = clave.split("-");
+  return { dia: Number(partes[2]), mes: MESES_CORTOS[Number(partes[1]) - 1] };
+}
+
+function pantallaGastos() {
+  var categorias = obtenerDatos("categorias");
+  var opcionesCuando = obtenerDatos("cuando");
+  pintarBarraSuperior(obtenerDatos("gastos"), obtenerDatos("avisos"), new Date());
+
+  var barraLista = document.getElementById("barra-lista");
+  var vistaLista = document.getElementById("vista-lista");
+  var vistaEditar = document.getElementById("vista-editar");
+  var navegacion = document.getElementById("navegacion");
+  var aviso = document.getElementById("aviso-gastos");
+
+  var campoMonto = document.getElementById("campo-monto");
+  var contenedorMonto = document.getElementById("contenedor-monto");
+  var campoNota = document.getElementById("campo-nota");
+  var alertaMonto = document.getElementById("alerta-monto");
+  var errorCategoria = document.getElementById("error-categoria");
+  var chipsCategoria = document.getElementById("chips-categoria");
+  var chipsCuando = document.getElementById("chips-cuando");
+  var confirmar = document.getElementById("confirmar-monto");
+
+  var editando = null;          /* el gasto que se está editando */
+  var categoria = "";
+  var cuando = "hoy";           /* "hoy", "ayer" u "otro" (su fecha original) */
+  var cambioPendiente = null;   /* los cambios que esperan el "¿Está bien?" */
+
+  function recientesPrimero(gastos) {
+    return gastos.slice().sort(function (a, b) {
+      return (b.dia + b.creado).localeCompare(a.dia + a.creado);
+    });
+  }
+
+  /* --- Lista: "Este mes" y los gastos por día --- */
+  function pintarMes(gastos) {
+    var hoy = new Date();
+    var mes = claveDia(hoy).slice(0, 7);
+    var delMes = gastos.filter(function (g) { return g.dia.slice(0, 7) === mes; });
+    document.getElementById("tarjeta-mes").hidden = delMes.length === 0;
+    var total = delMes.reduce(function (suma, g) { return suma + g.monto; }, 0);
+    document.getElementById("total-mes").textContent = pesos(total);
+
+    var porCategoria = {};
+    delMes.forEach(function (g) { porCategoria[g.categoria] = (porCategoria[g.categoria] || 0) + g.monto; });
+    var zona = document.getElementById("categorias-mes");
+    zona.replaceChildren();
+    Object.keys(porCategoria).sort(function (a, b) { return porCategoria[b] - porCategoria[a]; }).forEach(function (nombre) {
+      var estilo = ESTILO_CATEGORIA[nombre] || ESTILO_CATEGORIA["Otro"];
+      var porcentaje = Math.round(porCategoria[nombre] / total * 100);
+      var bloque = crearElemento("div", "pila");
+      var fila = crearElemento("div", "fila");
+      var icono = crearElemento("span", "icono-recuadro icono-recuadro--pequeno icono-recuadro--categoria icono-recuadro--" + estilo.clase);
+      icono.appendChild(crearIcono(estilo.icono));
+      fila.appendChild(icono);
+      fila.appendChild(crearElemento("strong", "", nombre));
+      fila.appendChild(crearElemento("span", "espaciador"));
+      fila.appendChild(crearElemento("span", "texto-suave texto-pequeno", porcentaje + "%"));
+      fila.appendChild(crearElemento("span", "fila-lista__importe", pesos(porCategoria[nombre])));
+      var barra = crearElemento("div", "barra-progreso");
+      barra.style.setProperty("--progreso", porcentaje + "%");
+      barra.setAttribute("role", "img");
+      barra.setAttribute("aria-label", nombre + ": " + porcentaje + "% de lo gastado este mes");
+      barra.appendChild(crearElemento("span", "barra-progreso__relleno"));
+      bloque.appendChild(fila);
+      bloque.appendChild(barra);
+      zona.appendChild(bloque);
+    });
+  }
+
+  function tituloDelDia(clave) {
+    var hoy = new Date();
+    if (clave === diaHaceN(hoy, 0).clave) return "Hoy";
+    if (clave === diaHaceN(hoy, 1).clave) return "Ayer";
+    var d = partesDeDia(clave);
+    return d.dia + " de " + d.mes;
+  }
+
+  function pintarLista() {
+    var gastos = obtenerDatos("gastos");
+    pintarMes(gastos);
+    var zona = document.getElementById("lista-gastos");
+    zona.replaceChildren();
+    document.getElementById("ayuda-gastos").hidden = gastos.length === 0;
+
+    if (gastos.length === 0) {
+      var vacia = crearElemento("div", "tarjeta tarjeta--vacia pila");
+      vacia.appendChild(crearElemento("p", "", "Todavía no hay gastos. El primero toma 10 segundos."));
+      var registrar = crearElemento("a", "boton boton--secundario", "Registrar mi primer gasto");
+      registrar.href = "registrar-gasto.html";
+      vacia.appendChild(registrar);
+      zona.appendChild(vacia);
+      return;
+    }
+
+    var tarjeta = null;
+    var lista = null;
+    var diaActual = "";
+    recientesPrimero(gastos).forEach(function (g) {
+      if (g.dia !== diaActual) {
+        diaActual = g.dia;
+        tarjeta = crearElemento("section", "tarjeta");
+        tarjeta.appendChild(crearElemento("h2", "etiqueta-mayuscula", tituloDelDia(g.dia)));
+        lista = crearElemento("div", "lista");
+        tarjeta.appendChild(lista);
+        zona.appendChild(tarjeta);
+      }
+      var estilo = ESTILO_CATEGORIA[g.categoria] || ESTILO_CATEGORIA["Otro"];
+      var nombre = g.nota || g.categoria;
+      var fila = crearElemento("a", "fila-lista fila-lista--boton");
+      fila.href = "#editar-" + g.id;
+      fila.setAttribute("aria-label", nombre + ", " + pesos(g.monto) + ". Toca para editar");
+      var icono = crearElemento("span", "icono-recuadro icono-recuadro--categoria icono-recuadro--" + estilo.clase);
+      icono.appendChild(crearIcono(estilo.icono));
+      var cuerpo = crearElemento("span", "fila-lista__cuerpo");
+      cuerpo.appendChild(crearElemento("span", "fila-lista__titulo", nombre));
+      cuerpo.appendChild(crearElemento("span", "texto-suave texto-pequeno", g.categoria));
+      fila.appendChild(icono);
+      fila.appendChild(cuerpo);
+      fila.appendChild(crearElemento("span", "fila-lista__importe", pesos(g.monto)));
+      fila.appendChild(crearIcono("flechaDer", "icono--sm"));
+      lista.appendChild(fila);
+    });
+  }
+
+  /* --- Editar: el mismo formulario de Registrar gasto, ya lleno --- */
+  function marcarUno(contenedor, valor) {
+    Array.prototype.forEach.call(contenedor.children, function (chip) {
+      marcarChip(chip, chip.getAttribute("data-valor") === valor);
+    });
+  }
+  function elegirCategoria(nombre) {
+    categoria = nombre;
+    marcarUno(chipsCategoria, nombre);
+    if (nombre) errorCategoria.hidden = true;
+  }
+  function elegirCuando(id) {
+    cuando = id;
+    marcarUno(chipsCuando, id);
+  }
+
+  categorias.forEach(function (c) {
+    var estilo = ESTILO_CATEGORIA[c.nombre] || ESTILO_CATEGORIA["Otro"];
+    var chip = crearElemento("button", "chip");
+    chip.type = "button";
+    chip.setAttribute("data-valor", c.nombre);
+    chip.appendChild(crearIcono(estilo.icono, "icono--sm"));
+    chip.appendChild(document.createTextNode(c.nombre));
+    marcarChip(chip, false);
+    chip.addEventListener("click", function () { elegirCategoria(c.nombre); });
+    chipsCategoria.appendChild(chip);
+  });
+
+  /* Hoy y Ayer siempre; si el gasto es de otro día, un tercer chip con esa fecha
+     (ya marcado) para no perderla al guardar */
+  function pintarChipsCuando(gasto) {
+    chipsCuando.replaceChildren();
+    var hoy = new Date();
+    var opciones = opcionesCuando.map(function (o) { return { id: o.id, nombre: o.nombre }; });
+    var esDeHoyOAyer = gasto.dia === diaHaceN(hoy, 0).clave || gasto.dia === diaHaceN(hoy, 1).clave;
+    if (!esDeHoyOAyer) {
+      var d = partesDeDia(gasto.dia);
+      opciones.push({ id: "otro", nombre: d.dia + " " + d.mes });
+    }
+    opciones.forEach(function (o) {
+      var chip = crearElemento("button", "chip", o.nombre);
+      chip.type = "button";
+      chip.setAttribute("data-valor", o.id);
+      chip.addEventListener("click", function () { elegirCuando(o.id); });
+      chipsCuando.appendChild(chip);
+    });
+    elegirCuando(gasto.dia === diaHaceN(hoy, 0).clave ? "hoy" : gasto.dia === diaHaceN(hoy, 1).clave ? "ayer" : "otro");
+  }
+
+  function montoEscrito() { return Number(soloNumeros(campoMonto.value)); }
+
+  function mostrarErrorMonto(hay) {
+    contenedorMonto.classList.toggle("campo-monto--error", hay);
+    campoMonto.setAttribute("aria-invalid", hay ? "true" : "false");
+    if (hay) campoMonto.setAttribute("aria-describedby", "alerta-monto");
+    else campoMonto.removeAttribute("aria-describedby");
+    alertaMonto.hidden = !hay;
+  }
+
+  function ocultarConfirmacion() {
+    confirmar.hidden = true;
+    cambioPendiente = null;
+  }
+
+  campoMonto.addEventListener("input", function () {
+    var numeros = soloNumeros(campoMonto.value);
+    campoMonto.value = numeros ? conPuntos(numeros) : "";
+    if (Number(numeros) > 0) mostrarErrorMonto(false);
+  });
+
+  function abrirEdicion(gasto) {
+    editando = gasto;
+    campoMonto.value = conPuntos(String(gasto.monto));
+    campoNota.value = gasto.nota === gasto.categoria ? "" : gasto.nota;
+    elegirCategoria(gasto.categoria);
+    pintarChipsCuando(gasto);
+    mostrarErrorMonto(false);
+    errorCategoria.hidden = true;
+    ocultarConfirmacion();
+    barraLista.hidden = true;
+    vistaLista.hidden = true;
+    navegacion.hidden = true;
+    vistaEditar.hidden = false;
+    window.scrollTo(0, 0);
+  }
+
+  function abrirLista() {
+    editando = null;
+    ocultarConfirmacion();
+    vistaEditar.hidden = true;
+    barraLista.hidden = false;
+    vistaLista.hidden = false;
+    navegacion.hidden = false;
+    pintarLista();
+    pintarBarraSuperior(obtenerDatos("gastos"), obtenerDatos("avisos"), new Date());
+    window.scrollTo(0, 0);
+  }
+
+  /* Vuelve a la lista sin dejar la pantalla de edición en el historial */
+  function volverALaLista() {
+    window.history.replaceState(null, "", "#lista");
+    abrirLista();
+  }
+
+  function guardarCambios(cambios) {
+    var gastos = obtenerDatos("gastos");
+    var gasto = gastos.filter(function (g) { return g.id === editando.id; })[0];
+    if (gasto) {
+      gasto.nota = cambios.nota;
+      gasto.monto = cambios.monto;
+      gasto.categoria = cambios.categoria;
+      gasto.dia = cambios.dia;
+      guardarDatos("gastos", gastos);
+    }
+    volverALaLista();
+    mostrarAvisoTemporal(aviso, "Gasto actualizado");
+  }
+
+  vistaEditar.addEventListener("submit", function (e) {
+    e.preventDefault();
+    ocultarConfirmacion();
+    var sinMonto = montoEscrito() <= 0;
+    var sinCategoria = !categoria;
+    mostrarErrorMonto(sinMonto);
+    errorCategoria.hidden = !sinCategoria;
+    if (sinMonto) { campoMonto.focus(); return; }
+    if (sinCategoria) return;
+
+    var hoy = new Date();
+    var cambios = {
+      nota: campoNota.value.trim() || categoria,
+      monto: montoEscrito(),
+      categoria: categoria,
+      dia: cuando === "otro" ? editando.dia : diaHaceN(hoy, cuando === "ayer" ? 1 : 0).clave
+    };
+    var ingreso = obtenerDatos("perfil")[0].ingresoMensual;
+    if (ingreso > 0 && cambios.monto > ingreso) {
+      cambioPendiente = cambios;
+      document.getElementById("confirmar-texto").textContent = "Escribiste " + pesos(cambios.monto) + " y tus ingresos son " + pesos(ingreso) + ". ¿Está bien?";
+      confirmar.hidden = false;
+      confirmar.scrollIntoView({ block: "center" });
+      return;
+    }
+    guardarCambios(cambios);
+  });
+
+  document.getElementById("boton-corregir").addEventListener("click", function () {
+    ocultarConfirmacion();
+    campoMonto.focus();
+  });
+  document.getElementById("boton-confirmar").addEventListener("click", function () {
+    var cambios = cambioPendiente;
+    ocultarConfirmacion();
+    if (cambios) guardarCambios(cambios);
+  });
+
+  /* --- Eliminar (con Deshacer) --- */
+  document.getElementById("boton-eliminar").addEventListener("click", function () {
+    var eliminado = editando;
+    guardarDatos("gastos", obtenerDatos("gastos").filter(function (g) { return g.id !== eliminado.id; }));
+    volverALaLista();
+    mostrarAvisoTemporal(aviso, "Gasto eliminado", {
+      texto: "Deshacer",
+      alHacer: function () {
+        var gastos = obtenerDatos("gastos");
+        gastos.push(eliminado);
+        guardarDatos("gastos", gastos);
+        pintarLista();
+        pintarBarraSuperior(gastos, obtenerDatos("avisos"), new Date());
+        mostrarAvisoTemporal(aviso, "Gasto restaurado");
+      }
+    });
+  });
+
+  /* --- Qué se ve: la lista, o la edición de un gasto según el # del link ---
+     gastos.html#editar-5 abre el gasto 5; #editar y #eliminar, el más reciente
+     (la opción de eliminar está dentro de la edición). */
+  function mostrarSegunLink() {
+    var pedido = window.location.hash.replace("#", "");
+    var gastos = obtenerDatos("gastos");
+    var gasto = null;
+    if (pedido.indexOf("editar-") === 0) {
+      var id = Number(pedido.slice(7));
+      gasto = gastos.filter(function (g) { return g.id === id; })[0];
+    } else if (pedido === "editar" || pedido === "eliminar") {
+      gasto = recientesPrimero(gastos)[0];
+    }
+    if (gasto) abrirEdicion(gasto); else abrirLista();
+  }
+
+  window.addEventListener("hashchange", mostrarSegunLink);
+  mostrarSegunLink();
+}
+
+
 /* ---------- Arranque: cada página ejecuta solo la función de su pantalla ---------- */
 
 var PANTALLAS = {
   "index": pantallaIndex,
   "inicio": pantallaInicio,
   "registrar-gasto": pantallaRegistrarGasto,
+  "gastos": pantallaGastos,
   "meta-detalle": pantallaMetaDetalle,
   "racha": pantallaRacha,
   "copiloto": pantallaCopiloto,
