@@ -58,6 +58,7 @@ Todos viven en css/components.css y usan solo variables de css/tokens.css. Cada 
 - `.logo` (`--sm`, `--lg`) con `.logo__linea`, `.logo__nodo`, `.logo__nodo--acento`: el logo de NEXO. Copia el SVG de componentes.html.
 - `.icono-recuadro` (`--pequeno`, `--acento`, `--categoria` con `--comida`, `--transporte`, `--salidas`, `--compras`, `--educacion`, `--otro`): `<span class="icono-recuadro icono-recuadro--categoria icono-recuadro--comida">…</span>`
 - `.ilustracion`: recuadro arena con una imagen de assets/ (carrusel de bienvenida). `<div class="ilustracion"><img src="assets/onboarding-1.svg" alt="Descripción"></div>`
+- `.avatar`: círculo con la inicial de quien escribe (comunidad). `<span class="avatar" aria-hidden="true">C</span>`
 - `.marca-exito`: círculo de éxito. `<div class="marca-exito">…</div>`
 
 **Botones**

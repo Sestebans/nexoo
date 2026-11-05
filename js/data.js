@@ -78,6 +78,71 @@ const DATOS = {
      Empieza vacío. Por ahora solo guarda el consejo que da la recompensa. */
   mensajes: [],
 
+  /* Categorías de las preguntas del foro (spec.md, Preguntas del foro > categoría) */
+  categoriasForo: [
+    { id: 1, nombre: "Ahorro" },
+    { id: 2, nombre: "Presupuesto" },
+    { id: 3, nombre: "Crédito" },
+    { id: 4, nombre: "Hábitos" },
+    { id: 5, nombre: "Primer empleo" },
+    { id: 6, nombre: "Otra" }
+  ],
+
+  /* Preguntas del foro (spec.md, sección Datos > Preguntas del foro).
+     "ejemplo" marca las de demostración. Las preguntas nuevas se agregan al inicio. */
+  preguntas: [
+    {
+      id: "seed1",
+      titulo: "¿Cómo empiezo a ahorrar si gano poco?",
+      texto: "Recibo cerca de un salario mínimo y siempre llego a fin de mes sin nada. ¿Por dónde empiezo?",
+      categoria: "Ahorro",
+      autor: "Camila R.",
+      fecha: "2026-10-05T15:00:00.000Z",
+      ejemplo: true
+    },
+    {
+      id: "seed2",
+      titulo: "¿Me conviene sacar una tarjeta de crédito siendo estudiante?",
+      texto: "Me ofrecieron una en la universidad pero no sé si tiene sentido tenerla tan joven.",
+      categoria: "Crédito",
+      autor: "Daniel P.",
+      fecha: "2026-10-07T18:30:00.000Z",
+      ejemplo: true
+    },
+    {
+      id: "seed3",
+      titulo: "¿Cómo organizo mis gastos si me pagan por días?",
+      texto: "Trabajo medio tiempo y mis ingresos cambian cada semana. No sé cómo armar un presupuesto así.",
+      categoria: "Presupuesto",
+      autor: "Valentina S.",
+      fecha: "2026-10-09T13:10:00.000Z",
+      ejemplo: true
+    }
+  ],
+
+  /* Respuestas del foro (spec.md, sección Datos > Respuestas del foro).
+     "preguntaId" dice a cuál pregunta pertenece; "utiles" cuenta quién la marcó como útil. */
+  respuestas: [
+    {
+      id: "seed1a",
+      preguntaId: "seed1",
+      autor: "Andrés M.",
+      texto: "A mí me sirvió apartar un monto fijo pequeño apenas me pagaban, aunque fuera poco. Lo que no ves, no lo gastas.",
+      utiles: 3,
+      marcadaPorMi: false,
+      ejemplo: true
+    },
+    {
+      id: "seed3a",
+      preguntaId: "seed3",
+      autor: "Laura G.",
+      texto: "Yo calculo con lo que gané la semana anterior y no con lo que espero ganar. Así nunca me paso.",
+      utiles: 2,
+      marcadaPorMi: false,
+      ejemplo: true
+    }
+  ],
+
   /* Las 3 preguntas sugeridas del chat con el copiloto. Esta lista no está en spec.md. */
   preguntasSugeridas: [
     { id: 1, texto: "¿Cuánto puedo gastar al día?" },
