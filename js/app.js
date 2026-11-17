@@ -1716,7 +1716,10 @@ var PALABRAS_CATEGORIA = [
 /* Busca el monto en la frase: "15 mil", "$ 8.500", "dos lucas", "1,5 millones"... */
 function leerMontoDeFrase(texto) {
   var limpio = texto.replace(/\$/g, " ");
-  while (/(\d)[.,](\d{3})(?!\d)/.test(limpio)) limpio = limpio.replace(/(\d)[.,](\d{3})(?!\d)/g, "$1$2");
+  /* Junta los miles: "50.000", "50,000" y también "50 000" (el dictado a veces
+     separa los miles con un espacio y así se leía solo "50") */
+  var miles = /(\d)[.,\s](\d{3})(?!\d)/;
+  while (miles.test(limpio)) limpio = limpio.replace(miles, "$1$2");
   var encontrado = limpio.match(/(\d+(?:[.,]\d+)?)\s*(millones|mill[oó]n|mil|lucas?|k|palos?)?(?![a-záéíóúA-ZÁÉÍÓÚ])/i);
   if (encontrado) {
     var valor = parseFloat(encontrado[1].replace(",", "."));
