@@ -59,7 +59,7 @@
       <!-- 4. Privacidad -->
       <section class="tarjeta pila" aria-labelledby="titulo-privacidad">
         <h2 class="titulo-tarjeta" id="titulo-privacidad">Privacidad</h2>
-        <p class="texto-suave">NEXO no pide credenciales bancarias. Tus gastos y metas se guardan solo en este dispositivo. Al copiloto solo viajan cifras agregadas, nunca las descripciones de tus gastos.</p>
+        <p class="texto-suave">NEXO no pide credenciales bancarias. Tus gastos y metas se guardan en este dispositivo y en una copia privada en la nube que solo este navegador puede abrir. Al copiloto solo viajan cifras agregadas, nunca las descripciones de tus gastos.</p>
       </section>
 
       <!-- 5. Modo demostración -->
@@ -74,7 +74,7 @@
             <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
             <span id="confirmar-reinicio-titulo">¿Reiniciar la demo?</span>
           </div>
-          <p>Se borrarán tus gastos, metas, preguntas e ingresos de este dispositivo. Esto no se puede deshacer.</p>
+          <p>Se borrarán tus gastos, metas, preguntas e ingresos de este dispositivo y de la nube. Esto no se puede deshacer.</p>
           <div class="fila">
             <button type="button" class="boton boton--terciario boton--completo" id="boton-cancelar-reinicio">Cancelar</button>
             <button type="button" class="boton boton--peligro boton--completo" id="boton-confirmar-reinicio">Sí, reiniciar</button>
@@ -85,6 +85,7 @@
     </div>
   </main>
 
+  <script src="../js/config.js"></script>
   <script src="../js/data.js"></script>
   <script src="../js/app.js"></script>
 </body>

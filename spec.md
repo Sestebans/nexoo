@@ -4,7 +4,9 @@ NEXO, "Tu primer copiloto financiero", es una app para celular que ayuda a jóve
 
 **Cómo leer las marcas de "Qué funciona de verdad"**
 - **Real:** funciona y se guarda. Solo aplica a lo que ya funciona sin servidor propio: el dictado por voz (usa el reconocimiento de voz del navegador). La conexión del copiloto con una IA quedó para Después.
-- **Simulado:** se ve y se puede tocar, pero los datos viven solo en el navegador de la persona (hoy en `localStorage`) o son de ejemplo. Aquí también cuenta la navegación entre pantallas.
+- **Simulado:** se ve y se puede tocar, pero los datos son de ejemplo o se calculan en el navegador. Aquí también cuenta la navegación entre pantallas.
+
+**Dónde se guardan los datos:** lo que la persona guarda (perfil, gastos, metas, preguntas, avisos...) queda en su navegador (`localStorage`) y se copia a Supabase, en la tabla `datos_nexo`. Cada navegador entra como un usuario anónimo y solo puede ver sus propios datos. Si no hay internet, la app sigue funcionando y sube lo pendiente después. Iniciar sesión para ver los mismos datos en otro dispositivo: **Después**.
 - **Después:** no entra en el MVP.
 
 **Archivo de diseño:** las 22 pantallas de este documento están en un solo archivo, `disenos/prototipo.html`, y se cambian con rutas internas (por ejemplo `#/gastos/nuevo`).
@@ -364,7 +366,7 @@ Solo lo que se deduce de los diseños y del flujo.
 - **Archivo de diseño:** `disenos/prototipo.html` (comparte archivo con todas las pantallas). Ruta `#/perfil`.
 - **Objetivo:** Esta pantalla existe para que una persona pueda ajustar su ingreso, elegir los colores de la app y reiniciar la demostración. Sabemos que funciona si actualiza su ingreso.
 - **Contenido, en orden de importancia:** 1) racha y plan. 2) ingreso mensual con Guardar. 3) colores: 4 paletas para elegir (Lima y tinta, Coral y ciruela, Mar y menta, Sol y noche). 4) privacidad. 5) modo demostración.
-- **Qué funciona de verdad:** Guardar ingreso, elegir colores, Cargar datos de ejemplo (6 días de gastos de ejemplo) y Reiniciar demo (borra los datos del dispositivo): **Simulado**. Cuentas y sesión para guardar entre dispositivos: **Después**.
+- **Qué funciona de verdad:** Guardar ingreso, elegir colores, Cargar datos de ejemplo (6 días de gastos de ejemplo) y Reiniciar demo (borra los datos del dispositivo y de Supabase): **Simulado**. Cuentas y sesión para guardar entre dispositivos: **Después**.
 - **Está lista cuando:**
   - Se ven la racha, el plan (Gratis o Pro), el ingreso editable, las 4 paletas de colores, la nota de privacidad y los botones de la demostración.
   - Elegir una paleta cambia los colores de toda la app y se mantiene al cambiar de pantalla.

@@ -11,7 +11,7 @@ NEXO: copiloto financiero que ayuda a entender y manejar el dinero con respuesta
 
 - HTML, CSS y JavaScript puro. Sin frameworks ni librerías (nada de React, Vue, Tailwind ni TypeScript) y sin paso de compilación: todo debe funcionar abriendo los archivos en el navegador.
 - La app se publicará en Vercel, conectada a este repositorio.
-- Más adelante, la base de datos será Supabase. Por ahora, los datos son simulados.
+- Base de datos: Supabase, sin librerías (con fetch a su API REST, en la sección "Nube" de js/app.js). Cada navegador entra como usuario anónimo y la tabla datos_nexo (supabase/tabla-datos-nexo.sql) tiene reglas RLS para que cada usuario vea solo lo suyo. Las pantallas no hablan con Supabase: usan obtenerDatos() y guardarDatos().
 
 ## Estructura del proyecto
 
@@ -20,7 +20,8 @@ NEXO: copiloto financiero que ayuda a entender y manejar el dinero con respuesta
 - assets/fuentes/: las fuentes (Bricolage Grotesque y DM Sans) en .woff2. Se cargan desde tokens.css, sin internet.
 - docs/: documentos del proyecto, como el brief y el benchmark (brief.pdf).
 - css/: estilos. tokens.css (decisiones base), components.css (componentes) y styles.css (estilos generales de las pantallas).
-- js/: código. app.js (comportamiento) y data.js (datos simulados, separados del diseño).
+- js/: código. app.js (comportamiento), data.js (datos de ejemplo y listas fijas, separados del diseño) y config.js (URL y publishable key de Supabase).
+- supabase/: el SQL de la tabla y sus reglas de seguridad.
 - index.html: la pantalla de inicio, la puerta de entrada de la app. Las demás pantallas van en la carpeta pages/.
 - Nombres de archivos y carpetas: minúsculas, sin tildes, ñ ni espacios, con guiones.
 
@@ -29,7 +30,7 @@ NEXO: copiloto financiero que ayuda a entender y manejar el dinero con respuesta
 1. Antes de crear o modificar archivos, explica tu plan en pocas líneas y espera aprobación.
 2. Trabaja una pantalla o una función a la vez.
 3. Usa solo los tokens y componentes del design kit. Si necesitas un estilo o componente que no existe, pregunta: primero se agrega al kit y a componentes.html, y después se usa.
-4. Nunca escribas claves, contraseñas ni tokens de acceso en el código: este repositorio es público.
+4. Nunca escribas claves, contraseñas ni tokens de acceso en el código: este repositorio es público. Única excepción aprobada por el equipo: la URL y la publishable key (o anon key) de Supabase en js/config.js, que son públicas por diseño. La secret key y la service_role key nunca van en el código.
 5. Si algo que te pedimos contradice spec.md, avísanos antes de hacerlo.
 6. Al terminar cada tarea, explica en lenguaje simple qué cambiaste y por qué. Somos un equipo aprendiendo.
 7. Antes de cada comando de git, explica en una frase qué hace.

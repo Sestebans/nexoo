@@ -10,9 +10,10 @@
 
 /* ---------- Datos ---------- */
 
-/* Los datos se leen SOLO con obtenerDatos(). Hoy devuelve lo que la persona
-   guardó en este navegador (Simulado) o, si no hay nada, los datos de ejemplo
-   de data.js. El día que conectemos Supabase, solo cambian estas dos funciones. */
+/* Los datos se leen SOLO con obtenerDatos() y se guardan SOLO con guardarDatos().
+   Las pantallas siempre usan la copia de este navegador (localStorage); si no hay
+   nada, los datos de ejemplo de data.js. Además, guardarDatos() manda una copia
+   a Supabase (ver "Nube" abajo), y al abrir la app se baja lo que hay allá. */
 function obtenerDatos(nombre) {
   try {
     var guardado = window.localStorage.getItem("nexo:" + nombre);
@@ -25,6 +26,184 @@ function guardarDatos(nombre, lista) {
   try {
     window.localStorage.setItem("nexo:" + nombre, JSON.stringify(lista));
   } catch (e) { /* el navegador no deja guardar: la demo sigue sin guardado */ }
+  subirANube(nombre);
+}
+
+
+/* ---------- Nube: copia de los datos en Supabase ----------
+   Sin librerías: se habla con Supabase con fetch (su API REST).
+   - Cada navegador entra como un usuario anónimo de Supabase.
+   - Cada lista (perfil, gastos, metas...) es una fila de la tabla datos_nexo.
+     Sus reglas (RLS) dejan a cada usuario ver y cambiar solo sus filas.
+   - Si no hay internet o js/config.js está vacío, la app sigue igual con la
+     copia del navegador; lo que no se pudo subir se intenta otra vez después. */
+
+var CLAVE_SESION = "nexo-sesion";              /* con guion (no "nexo:") para que Reiniciar demo no la borre */
+var CLAVE_PENDIENTES = "nexo-pendientes";      /* listas que todavía no se pudieron subir */
+var CLAVE_BORRAR_NUBE = "nexo-borrar-nube";    /* Reiniciar demo pidió borrar la nube y aún no se pudo */
+var CLAVE_YA_DESCARGADO = "nexo-descargado";   /* en sessionStorage: ya se bajó la nube en esta pestaña */
+var ESPERA_MAXIMA_NUBE = 4000;                 /* milisegundos que una página espera a la nube al abrir */
+
+function hayNube() {
+  return typeof SUPABASE !== "undefined" && !!SUPABASE.url && !!SUPABASE.clavePublica;
+}
+
+function leerLocal(clave) {
+  try { return JSON.parse(window.localStorage.getItem(clave)); } catch (e) { return null; }
+}
+function escribirLocal(clave, valor) {
+  try {
+    if (valor === null) window.localStorage.removeItem(clave);
+    else window.localStorage.setItem(clave, JSON.stringify(valor));
+  } catch (e) { /* sin guardado */ }
+}
+
+function pendientes() { return leerLocal(CLAVE_PENDIENTES) || []; }
+function marcarPendiente(nombre) {
+  var lista = pendientes();
+  if (lista.indexOf(nombre) === -1) { lista.push(nombre); escribirLocal(CLAVE_PENDIENTES, lista); }
+}
+function quitarPendiente(nombre) {
+  escribirLocal(CLAVE_PENDIENTES, pendientes().filter(function (n) { return n !== nombre; }));
+}
+
+/* Una petición a Supabase. Si responde con error, el error trae su código en .estado */
+function pedirANube(ruta, opciones, token) {
+  opciones = opciones || {};
+  var cabeceras = { "apikey": SUPABASE.clavePublica, "Content-Type": "application/json" };
+  if (token) cabeceras["Authorization"] = "Bearer " + token;
+  Object.keys(opciones.cabeceras || {}).forEach(function (k) { cabeceras[k] = opciones.cabeceras[k]; });
+  return fetch(SUPABASE.url.replace(/\/+$/, "") + ruta, {
+    method: opciones.metodo || "GET",
+    headers: cabeceras,
+    body: opciones.cuerpo === undefined ? undefined : JSON.stringify(opciones.cuerpo),
+    keepalive: !!opciones.keepalive      /* sigue aunque la persona cambie de página */
+  }).then(function (respuesta) {
+    if (!respuesta.ok) {
+      var error = new Error("Supabase respondió " + respuesta.status);
+      error.estado = respuesta.status;
+      throw error;
+    }
+    return respuesta.text().then(function (texto) { return texto ? JSON.parse(texto) : null; });
+  });
+}
+
+/* --- Sesión: la primera vez entra como usuario anónimo; después renueva el permiso --- */
+function guardarSesion(respuesta, anterior) {
+  var sesion = {
+    token: respuesta.access_token,
+    renovar: respuesta.refresh_token,
+    vence: respuesta.expires_at || Math.floor(Date.now() / 1000) + (respuesta.expires_in || 3600),
+    usuario: (respuesta.user && respuesta.user.id) || (anterior && anterior.usuario)
+  };
+  escribirLocal(CLAVE_SESION, sesion);
+  return sesion;
+}
+
+function entrarComoAnonimo() {
+  return pedirANube("/auth/v1/signup", { metodo: "POST", cuerpo: {} }).then(function (respuesta) {
+    /* Usuario nuevo: todo lo que ya había en este navegador se sube */
+    Object.keys(window.localStorage).forEach(function (clave) {
+      if (clave.indexOf("nexo:") === 0 && clave !== "nexo:avisoPendiente") marcarPendiente(clave.slice(5));
+    });
+    return guardarSesion(respuesta);
+  });
+}
+
+var sesionEnCurso = null;
+function obtenerSesion() {
+  if (sesionEnCurso) return sesionEnCurso;
+  var sesion = leerLocal(CLAVE_SESION);
+  var ahora = Math.floor(Date.now() / 1000);
+  var promesa;
+  if (sesion && sesion.token && sesion.vence - 60 > ahora) {
+    promesa = Promise.resolve(sesion);
+  } else if (sesion && sesion.renovar) {
+    promesa = pedirANube("/auth/v1/token?grant_type=refresh_token", { metodo: "POST", cuerpo: { refresh_token: sesion.renovar } })
+      .then(function (respuesta) { return guardarSesion(respuesta, sesion); })
+      .catch(function (error) {
+        /* Solo si Supabase rechaza el permiso se crea otro usuario; si es falta de internet, no */
+        if (error.estado >= 400 && error.estado < 500) return entrarComoAnonimo();
+        throw error;
+      });
+  } else {
+    promesa = entrarComoAnonimo();
+  }
+  sesionEnCurso = promesa.then(function (s) { sesionEnCurso = null; return s; }, function (error) { sesionEnCurso = null; throw error; });
+  return sesionEnCurso;
+}
+
+/* --- Subir una lista: crea su fila o la reemplaza (upsert) --- */
+function subirAhora(nombre, sesion) {
+  var contenido = leerLocal("nexo:" + nombre);
+  if (contenido === null) return Promise.resolve();
+  return pedirANube("/rest/v1/datos_nexo?on_conflict=usuario,nombre", {
+    metodo: "POST",
+    cabeceras: { "Prefer": "resolution=merge-duplicates,return=minimal" },
+    cuerpo: { usuario: sesion.usuario, nombre: nombre, contenido: contenido, actualizado: new Date().toISOString() },
+    keepalive: true
+  }, sesion.token);
+}
+
+/* Las subidas van en fila, una detrás de otra, para que la última siempre gane */
+var filaDeSubidas = Promise.resolve();
+function subirANube(nombre) {
+  if (!hayNube()) return filaDeSubidas;
+  marcarPendiente(nombre);
+  filaDeSubidas = filaDeSubidas.then(function () {
+    return obtenerSesion()
+      .then(function (sesion) { return subirAhora(nombre, sesion); })
+      .then(function () { quitarPendiente(nombre); })
+      .catch(function () { /* queda pendiente: se sube al abrir la próxima página */ });
+  });
+  return filaDeSubidas;
+}
+
+/* --- Al abrir una página: poner la nube y el navegador al día ---
+   1) Si Reiniciar demo lo pidió, borra las filas de la nube.
+   2) Sube lo que quedó pendiente.
+   3) La primera página de cada pestaña baja lo que hay en la nube.
+   Espera como máximo ESPERA_MAXIMA_NUBE; si la nube tarda, la página abre igual. */
+function sincronizarAlAbrir() {
+  if (!hayNube()) return Promise.resolve();
+  var hayQueBorrar = !!leerLocal(CLAVE_BORRAR_NUBE);
+  var hayQueBajar = true;
+  try { hayQueBajar = !window.sessionStorage.getItem(CLAVE_YA_DESCARGADO); } catch (e) { /* sin sessionStorage: se baja */ }
+  if (!hayQueBorrar && !hayQueBajar && pendientes().length === 0) return Promise.resolve();
+
+  var trabajo = obtenerSesion().then(function (sesion) {
+    var paso = Promise.resolve();
+    if (hayQueBorrar) {
+      paso = pedirANube("/rest/v1/datos_nexo?usuario=eq." + sesion.usuario, { metodo: "DELETE" }, sesion.token)
+        .then(function () { escribirLocal(CLAVE_BORRAR_NUBE, null); });
+    }
+    return paso
+      .then(function () {
+        return Promise.all(pendientes().map(function (nombre) {
+          return subirAhora(nombre, sesion).then(function () { quitarPendiente(nombre); });
+        }));
+      })
+      .then(function () {
+        if (!hayQueBajar) return;
+        return pedirANube("/rest/v1/datos_nexo?select=nombre,contenido", {}, sesion.token).then(function (filas) {
+          var sinSubir = pendientes();
+          (filas || []).forEach(function (fila) {
+            if (sinSubir.indexOf(fila.nombre) === -1) escribirLocal("nexo:" + fila.nombre, fila.contenido);
+          });
+          try { window.sessionStorage.setItem(CLAVE_YA_DESCARGADO, "1"); } catch (e) { /* sin sessionStorage */ }
+        });
+      });
+  });
+
+  var limite = new Promise(function (listo) { window.setTimeout(listo, ESPERA_MAXIMA_NUBE); });
+  return Promise.race([trabajo.catch(function () { /* sin nube: la página abre con la copia del navegador */ }), limite]);
+}
+
+/* Reiniciar demo: la próxima página borra las filas de este usuario en la nube */
+function pedirBorrarNube() {
+  if (!hayNube()) return;
+  escribirLocal(CLAVE_PENDIENTES, null);
+  escribirLocal(CLAVE_BORRAR_NUBE, true);
 }
 
 
@@ -208,7 +387,7 @@ function pantallaIndex() {
     pintarErrores();
     if (primero) { primero.focus(); return; }
 
-    /* Todo bien: se guarda en este navegador (Simulado) y se pasa a Inicio */
+    /* Todo bien: se guarda (en el navegador y en la nube) y se pasa a Inicio */
     var perfil = obtenerDatos("perfil");
     perfil[0].ingresoMensual = Number(soloNumeros(campos.ingreso.value));
     perfil[0].comoManejaPlata = Array.prototype.filter.call(chipsForma.children, function (chip) {
@@ -2515,6 +2694,7 @@ function pantallaPerfil() {
         return clave.indexOf("nexo:") === 0;
       }).forEach(function (clave) { window.localStorage.removeItem(clave); });
     } catch (e) { /* si el navegador no deja borrar, igual se vuelve a la bienvenida */ }
+    pedirBorrarNube();   /* la bienvenida borra también la copia en Supabase */
     window.location.href = "../index.html";
   });
 
@@ -2559,8 +2739,12 @@ var PANTALLAS = {
 };
 
 document.addEventListener("DOMContentLoaded", function () {
-  entregarPendientes();     /* lo que ya le tocaba llegar (aunque la persona haya cambiado de pantalla) */
-  programarEntregas();      /* y lo que todavía falta, para cuando le toque */
-  var nombre = document.body.getAttribute("data-pantalla");
-  if (PANTALLAS[nombre]) PANTALLAS[nombre]();
+  /* Primero se pone al día con la nube (si hay); después se dibuja la pantalla */
+  sincronizarAlAbrir().then(function () {
+    aplicarPaleta(obtenerDatos("perfil")[0].paleta);   /* por si la nube trajo otra paleta */
+    entregarPendientes();     /* lo que ya le tocaba llegar (aunque la persona haya cambiado de pantalla) */
+    programarEntregas();      /* y lo que todavía falta, para cuando le toque */
+    var nombre = document.body.getAttribute("data-pantalla");
+    if (PANTALLAS[nombre]) PANTALLAS[nombre]();
+  });
 });
