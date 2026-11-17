@@ -14,6 +14,6 @@
    ========================================================= */
 
 const SUPABASE = {
-  url: "",            /* ej. "https://abcdefgh.supabase.co" */
-  clavePublica: ""    /* ej. "sb_publishable_..." */
+  url: "https://eiqynnxcnvztxhqzqdce.supabase.co",
+  clavePublica: "sb_publishable_GHP672J8dqjDwGM7_UBlJw_-8R73Y0c"
 };
