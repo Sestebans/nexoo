@@ -492,9 +492,10 @@ function crearElemento(etiqueta, clase, texto) {
   return el;
 }
 
-/* 1500000 -> "$ 1.500.000" */
+/* 1500000 -> "$ 1.500.000". Entre el signo y el número va un espacio que no se
+   parte (\u00a0): así el "$" nunca queda solo al final de un renglón. */
 function pesos(numero) {
-  return "$ " + conPuntos(Math.abs(Math.round(numero)));
+  return "$\u00a0" + conPuntos(Math.abs(Math.round(numero)));
 }
 
 /* Fecha -> "AAAA-MM-DD" (así se guarda el día de un gasto) */
@@ -577,7 +578,7 @@ function pantallaInicio() {
   function pintarResumen() {
     var ocultar = perfil[0].ocultarMontos;
     function monto(elemento, numero) {
-      elemento.textContent = ocultar ? "$ ****" : pesos(numero);
+      elemento.textContent = ocultar ? "$\u00a0****" : pesos(numero);
       if (ocultar) elemento.setAttribute("aria-label", "Monto oculto");
       else elemento.removeAttribute("aria-label");
     }
