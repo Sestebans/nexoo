@@ -33,6 +33,7 @@ Solo lo que se deduce de los diseños y del flujo.
 | cómo maneja su plata | lista opcional: Débito, Crédito, Efectivo, Billetera digital |
 | onboarding completado | sí o no |
 | ocultar montos | sí o no (el ojo de Inicio) |
+| paleta de colores | Lima y tinta (la de siempre), Coral y ciruela, Mar y menta o Sol y noche |
 
 **Gastos**
 
@@ -361,11 +362,12 @@ Solo lo que se deduce de los diseños y del flujo.
 ### Perfil
 
 - **Archivo de diseño:** `disenos/prototipo.html` (comparte archivo con todas las pantallas). Ruta `#/perfil`.
-- **Objetivo:** Esta pantalla existe para que una persona pueda ajustar su ingreso y reiniciar la demostración. Sabemos que funciona si actualiza su ingreso.
-- **Contenido, en orden de importancia:** 1) racha y plan. 2) ingreso mensual con Guardar. 3) privacidad. 4) modo demostración. El selector de colores no entra: el equipo decidió una sola paleta.
-- **Qué funciona de verdad:** Guardar ingreso, Cargar datos de ejemplo (6 días de gastos de ejemplo) y Reiniciar demo (borra los datos del dispositivo): **Simulado**. Cuentas y sesión para guardar entre dispositivos: **Después**.
+- **Objetivo:** Esta pantalla existe para que una persona pueda ajustar su ingreso, elegir los colores de la app y reiniciar la demostración. Sabemos que funciona si actualiza su ingreso.
+- **Contenido, en orden de importancia:** 1) racha y plan. 2) ingreso mensual con Guardar. 3) colores: 4 paletas para elegir (Lima y tinta, Coral y ciruela, Mar y menta, Sol y noche). 4) privacidad. 5) modo demostración.
+- **Qué funciona de verdad:** Guardar ingreso, elegir colores, Cargar datos de ejemplo (6 días de gastos de ejemplo) y Reiniciar demo (borra los datos del dispositivo): **Simulado**. Cuentas y sesión para guardar entre dispositivos: **Después**.
 - **Está lista cuando:**
-  - Se ven la racha, el plan (Gratis o Pro), el ingreso editable, la nota de privacidad y los botones de la demostración.
+  - Se ven la racha, el plan (Gratis o Pro), el ingreso editable, las 4 paletas de colores, la nota de privacidad y los botones de la demostración.
+  - Elegir una paleta cambia los colores de toda la app y se mantiene al cambiar de pantalla.
   - Guardar un ingreso mayor que cero muestra "Ingresos actualizados".
   - Reiniciar demo pide confirmación antes de borrar.
   - Se ve igual al diseño aprobado.

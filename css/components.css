@@ -554,6 +554,39 @@ a { color: inherit; }
 }
 .buscador .campo { padding-left: calc(var(--espacio-4) + var(--icono-md) + var(--espacio-3)); }
 
+/* Opción de paleta (Perfil > Colores): botón con 4 muestras de color.
+   Las muestras toman los colores de la paleta que dice el data-paleta
+   de .opcion-paleta__muestras (por eso no llevan colores sueltos). */
+.opcion-paleta {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  width: 100%;
+  padding: var(--espacio-3);
+  border: var(--borde-grueso) solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  text-align: left;
+  transition: border-color var(--duracion-boton) ease;
+}
+.opcion-paleta:hover { border-color: var(--color-texto-suave); }
+.opcion-paleta[aria-pressed="true"] { border-color: var(--color-primario); }
+.opcion-paleta__muestras { display: flex; flex: none; }
+.opcion-paleta__muestra {
+  width: var(--icono-lg);
+  height: var(--icono-lg);
+  border: var(--borde-grueso) solid var(--color-superficie);
+  border-radius: var(--radio-total);
+  box-shadow: var(--sombra-suave);
+}
+.opcion-paleta__muestra + .opcion-paleta__muestra { margin-left: calc(var(--espacio-2) * -1); }
+.opcion-paleta__muestra--fondo { background: var(--color-fondo); }
+.opcion-paleta__muestra--primario { background: var(--color-primario); }
+.opcion-paleta__muestra--secundario { background: var(--color-secundario); }
+.opcion-paleta__muestra--ia { background: var(--color-ia); }
+.opcion-paleta__cuerpo { display: grid; flex: 1; min-width: 0; }
+
 
 /* ---------- 9. AVISOS Y CHAT ---------- */
 

@@ -27,7 +27,8 @@ const DATOS = {
       ingresoMensual: 0,
       comoManejaPlata: [],
       onboardingCompletado: false,
-      ocultarMontos: false
+      ocultarMontos: false,
+      paleta: "lima"
     }
   ],
 
@@ -232,5 +233,14 @@ const DATOS = {
     { id: 2, nombre: "Crédito" },
     { id: 3, nombre: "Efectivo" },
     { id: 4, nombre: "Billetera digital" }
+  ],
+
+  /* Paletas de colores que se eligen en Perfil > Colores (spec.md, Perfil).
+     El "id" es el valor de data-paleta en tokens.css. */
+  paletas: [
+    { id: "lima", nombre: "Lima y tinta", texto: "La original. Fresca, con acento verde lima." },
+    { id: "coral", nombre: "Coral y ciruela", texto: "Cálida y cercana, más amable." },
+    { id: "mar", nombre: "Mar y menta", texto: "Serena, transmite calma y confianza." },
+    { id: "sol", nombre: "Sol y noche", texto: "Enérgica y luminosa." }
   ]
 };

@@ -132,6 +132,30 @@
     <h2 class="titulo-interno">Colores</h2>
     <p class="texto-suave">Cada muestra dice el nombre de la variable y su valor real, leído de <code>tokens.css</code>.</p>
     <div id="rejillas-colores" class="catalogo__lista"></div>
+    <p class="texto-suave">Hay 4 paletas. Cada una cambia solo los colores de marca, azul, fondos, texto y bordes. Se activan con <code>data-paleta="lima"</code>, <code>"coral"</code>, <code>"mar"</code> o <code>"sol"</code> en <code>&lt;html&gt;</code> (la app lo hace sola con la que se eligió en Perfil). Sin <code>data-paleta</code> se usa lima.</p>
+    <div class="catalogo__lista">
+      <figure class="catalogo__item">
+        <figcaption class="catalogo__nombre">.opcion-paleta con .opcion-paleta__muestras (data-paleta) y .opcion-paleta__cuerpo</figcaption>
+        <div class="catalogo__demo pila" data-codigo>
+          <button type="button" class="opcion-paleta" aria-pressed="true">
+            <span class="opcion-paleta__muestras" data-paleta="lima" aria-hidden="true"><span class="opcion-paleta__muestra opcion-paleta__muestra--fondo"></span><span class="opcion-paleta__muestra opcion-paleta__muestra--primario"></span><span class="opcion-paleta__muestra opcion-paleta__muestra--secundario"></span><span class="opcion-paleta__muestra opcion-paleta__muestra--ia"></span></span>
+            <span class="opcion-paleta__cuerpo"><strong>Lima y tinta</strong><span class="texto-suave texto-pequeno">La original. Fresca, con acento verde lima.</span></span>
+          </button>
+          <button type="button" class="opcion-paleta" aria-pressed="false">
+            <span class="opcion-paleta__muestras" data-paleta="coral" aria-hidden="true"><span class="opcion-paleta__muestra opcion-paleta__muestra--fondo"></span><span class="opcion-paleta__muestra opcion-paleta__muestra--primario"></span><span class="opcion-paleta__muestra opcion-paleta__muestra--secundario"></span><span class="opcion-paleta__muestra opcion-paleta__muestra--ia"></span></span>
+            <span class="opcion-paleta__cuerpo"><strong>Coral y ciruela</strong><span class="texto-suave texto-pequeno">Cálida y cercana, más amable.</span></span>
+          </button>
+          <button type="button" class="opcion-paleta" aria-pressed="false">
+            <span class="opcion-paleta__muestras" data-paleta="mar" aria-hidden="true"><span class="opcion-paleta__muestra opcion-paleta__muestra--fondo"></span><span class="opcion-paleta__muestra opcion-paleta__muestra--primario"></span><span class="opcion-paleta__muestra opcion-paleta__muestra--secundario"></span><span class="opcion-paleta__muestra opcion-paleta__muestra--ia"></span></span>
+            <span class="opcion-paleta__cuerpo"><strong>Mar y menta</strong><span class="texto-suave texto-pequeno">Serena, transmite calma y confianza.</span></span>
+          </button>
+          <button type="button" class="opcion-paleta" aria-pressed="false">
+            <span class="opcion-paleta__muestras" data-paleta="sol" aria-hidden="true"><span class="opcion-paleta__muestra opcion-paleta__muestra--fondo"></span><span class="opcion-paleta__muestra opcion-paleta__muestra--primario"></span><span class="opcion-paleta__muestra opcion-paleta__muestra--secundario"></span><span class="opcion-paleta__muestra opcion-paleta__muestra--ia"></span></span>
+            <span class="opcion-paleta__cuerpo"><strong>Sol y noche</strong><span class="texto-suave texto-pequeno">Enérgica y luminosa.</span></span>
+          </button>
+        </div>
+      </figure>
+    </div>
   </section>
 
 

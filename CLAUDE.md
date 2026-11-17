@@ -83,6 +83,10 @@ Todos viven en css/components.css y usan solo variables de css/tokens.css. Cada 
 - `.campo` (`--error`, `--area`, `--chat`): `<input class="campo campo--error" aria-invalid="true">`
 - `.campo-monto` (`--error`) con `.campo-monto__simbolo` y `.campo-monto__entrada`: campo de monto grande.
 - `.buscador` con `.buscador__icono` y `.campo`: campo con lupa.
+- `.opcion-paleta` con `.opcion-paleta__muestras` (lleva `data-paleta`), `.opcion-paleta__muestra` (`--fondo`, `--primario`, `--secundario`, `--ia`) y `.opcion-paleta__cuerpo`: opción de colores de Perfil. `<button class="opcion-paleta" aria-pressed="true"><span class="opcion-paleta__muestras" data-paleta="coral">…</span><span class="opcion-paleta__cuerpo"><strong>Coral y ciruela</strong></span></button>`
+
+**Paletas de color**
+- tokens.css tiene 4 paletas: `lima` (la de siempre), `coral`, `mar` y `sol`. Cada una cambia solo los colores base (marca, azul, fondos, texto y bordes). La app pone `data-paleta` en `<html>` con la que se eligió en Perfil; nunca escribas colores de una paleta a mano.
 
 **Avisos y chat**
 - `.alerta` (`--exito`, `--aviso`, `--error`): `<div class="alerta alerta--error" role="alert">…</div>`

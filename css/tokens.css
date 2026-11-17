@@ -26,10 +26,15 @@
   src: url("../assets/fuentes/dm-sans-latin.woff2") format("woff2");
 }
 
-:root {
-
-  /* ---------- COLORES ---------- */
-
+/* ---------- PALETAS DE COLOR ----------
+   La persona elige una de 4 paletas en Perfil > Colores. Cada paleta
+   cambia solo estos 12 colores base; los demás (superficie, estados,
+   categorías) son iguales en todas.
+   Se activa con data-paleta="…" en <html> (toda la app) o en cualquier
+   elemento (por ejemplo, las muestras de color de cada opción).
+   "Lima y tinta" es la paleta de siempre: la que se usa si no hay otra. */
+:root,
+[data-paleta="lima"] {
   /* Marca: tinta oscura y lima */
   --color-primario: #14142B;          /* botón principal, texto, tarjeta oscura */
   --color-primario-hover: #2A2A4A;    /* botón principal al pasar el mouse */
@@ -41,18 +46,72 @@
   --color-ia: #3A4BFF;                /* logo, nombre de NEXO, borde de foco */
   --color-ia-suave: #E8EBFF;          /* fondo suave del azul */
 
-  /* Fondos y superficies */
+  /* Fondos */
   --color-fondo: #F6F2EA;             /* fondo de la app */
   --color-fondo-suave: #ECE7DB;       /* fondo arena: recuadros, etiquetas suaves */
-  --color-superficie: #FFFFFF;        /* tarjetas, campos, chips */
 
   /* Texto */
   --color-texto: #14142B;             /* texto principal */
   --color-texto-suave: #5B5B73;       /* texto secundario */
-  --color-texto-inverso: #FFFFFF;     /* texto sobre fondos oscuros */
 
   /* Bordes */
   --color-borde: #E4DFD3;             /* bordes y separadores */
+}
+
+/* Coral y ciruela: cálida y cercana */
+[data-paleta="coral"] {
+  --color-primario: #2A1038;
+  --color-primario-hover: #3E1F52;
+  --color-secundario: #FF8F70;
+  --color-secundario-hover: #F27A58;
+  --color-secundario-suave: #FFE3D9;
+  --color-ia: #6C4BFF;
+  --color-ia-suave: #ECE6FF;
+  --color-fondo: #FFF5EE;
+  --color-fondo-suave: #F8E6DB;
+  --color-texto: #2A1038;
+  --color-texto-suave: #66506F;
+  --color-borde: #F0DDD2;
+}
+
+/* Mar y menta: serena */
+[data-paleta="mar"] {
+  --color-primario: #0D2B33;
+  --color-primario-hover: #1C434E;
+  --color-secundario: #7BE3C3;
+  --color-secundario-hover: #5BD3AF;
+  --color-secundario-suave: #D9F7EE;
+  --color-ia: #2F5BFF;
+  --color-ia-suave: #E4EBFF;
+  --color-fondo: #EEF6F5;
+  --color-fondo-suave: #E0EEEC;
+  --color-texto: #0D2B33;
+  --color-texto-suave: #4D6870;
+  --color-borde: #D5E4E2;
+}
+
+/* Sol y noche: enérgica */
+[data-paleta="sol"] {
+  --color-primario: #1A1814;
+  --color-primario-hover: #34302A;
+  --color-secundario: #FFD23F;
+  --color-secundario-hover: #F2C200;
+  --color-secundario-suave: #FFF1B8;
+  --color-ia: #2748FF;
+  --color-ia-suave: #E6EAFF;
+  --color-fondo: #FFFAEB;
+  --color-fondo-suave: #F6EDCF;
+  --color-texto: #1A1814;
+  --color-texto-suave: #5E5846;
+  --color-borde: #EDE4C8;
+}
+
+:root {
+
+  /* ---------- OTROS COLORES (iguales en todas las paletas) ---------- */
+
+  --color-superficie: #FFFFFF;        /* tarjetas, campos, chips */
+  --color-texto-inverso: #FFFFFF;     /* texto sobre fondos oscuros */
 
   /* Estados: éxito, aviso y error */
   --color-exito: #0B7A55;

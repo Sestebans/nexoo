@@ -2458,6 +2458,40 @@ function pantallaPerfil() {
     mostrarAvisoTemporal(aviso, "Ingresos actualizados");
   });
 
+  /* --- Colores: 4 paletas; la elegida se guarda y se aplica a toda la app --- */
+  var opcionesPaleta = document.getElementById("opciones-paleta");
+  var paletaActual = obtenerDatos("perfil")[0].paleta || "lima";
+  obtenerDatos("paletas").forEach(function (p) {
+    var opcion = crearElemento("button", "opcion-paleta");
+    opcion.type = "button";
+    opcion.setAttribute("data-valor", p.id);
+    var muestras = crearElemento("span", "opcion-paleta__muestras");
+    muestras.setAttribute("data-paleta", p.id);   /* las muestras se pintan con los colores de ESA paleta */
+    muestras.setAttribute("aria-hidden", "true");
+    ["fondo", "primario", "secundario", "ia"].forEach(function (parte) {
+      muestras.appendChild(crearElemento("span", "opcion-paleta__muestra opcion-paleta__muestra--" + parte));
+    });
+    var cuerpo = crearElemento("span", "opcion-paleta__cuerpo");
+    cuerpo.appendChild(crearElemento("strong", "", p.nombre));
+    cuerpo.appendChild(crearElemento("span", "texto-suave texto-pequeno", p.texto));
+    opcion.appendChild(muestras);
+    opcion.appendChild(cuerpo);
+    marcarChip(opcion, p.id === paletaActual);
+    opcion.addEventListener("click", function () {
+      if (p.id === paletaActual) return;
+      paletaActual = p.id;
+      var perfil = obtenerDatos("perfil");
+      perfil[0].paleta = p.id;
+      guardarDatos("perfil", perfil);
+      aplicarPaleta(p.id);
+      Array.prototype.forEach.call(opcionesPaleta.children, function (otra) {
+        marcarChip(otra, otra.getAttribute("data-valor") === p.id);
+      });
+      mostrarAvisoTemporal(aviso, "Colores actualizados");
+    });
+    opcionesPaleta.appendChild(opcion);
+  });
+
   /* --- Modo demostración --- */
   document.getElementById("boton-ejemplo").addEventListener("click", function () {
     guardarDatos("gastos", obtenerDatos("gastosEjemplo"));
@@ -2486,6 +2520,23 @@ function pantallaPerfil() {
 
   pintarRachaYPlan();
 }
+
+
+/* ---------- Colores: la paleta elegida en Perfil vale para toda la app ---------- */
+
+/* Pone data-paleta en <html>: tokens.css cambia los colores base con eso.
+   También pinta la barra del navegador del celular con el fondo de la paleta. */
+function aplicarPaleta(id) {
+  document.documentElement.setAttribute("data-paleta", id || "lima");
+  var barraNavegador = document.querySelector('meta[name="theme-color"]');
+  if (barraNavegador) {
+    barraNavegador.setAttribute("content", getComputedStyle(document.documentElement).getPropertyValue("--color-fondo").trim());
+  }
+}
+
+/* Se aplica apenas carga este archivo (sin esperar a DOMContentLoaded),
+   para que casi no se alcance a ver la paleta lima antes de la elegida. */
+aplicarPaleta(obtenerDatos("perfil")[0].paleta);
 
 
 /* ---------- Arranque: cada página ejecuta solo la función de su pantalla ---------- */
