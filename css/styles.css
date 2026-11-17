@@ -28,6 +28,25 @@
   padding-top: var(--espacio-4);
 }
 
+/* La ilustración protagonista de un paso (carrusel de bienvenida): crece y
+   llena el alto libre, así el texto queda abajo junto a los puntos y el botón.
+   Nunca se achica más que su forma normal (16:10 en un celular). */
+.paso__protagonista {
+  flex: 1;
+  aspect-ratio: auto;
+  min-height: calc(var(--alto-control-lg) * 4);
+}
+
+/* Los textos del carrusel: reservan el alto del texto más largo de todas las
+   diapositivas (app.js lo mide y lo pasa en --alto-textos) y se apoyan abajo,
+   junto a los puntos. Así la ilustración no salta al cambiar de diapositiva. */
+.paso__textos {
+  display: grid;
+  align-content: end;
+  gap: var(--espacio-4);
+  min-height: var(--alto-textos, auto);
+}
+
 /* Empuja un elemento al extremo derecho de su fila; si la fila se parte en dos
    líneas porque no cabe, queda a la derecha de la segunda */
 .al-extremo { margin-left: auto; }

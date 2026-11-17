@@ -250,14 +250,37 @@ function pantallaIndex() {
     puntos.appendChild(punto);
   });
 
-  function pintarDiapositiva() {
-    var d = diapositivas[actual];
-    imagen.src = d.imagen;
-    imagen.alt = d.alt;
+  var textos = document.getElementById("diapositiva-textos");
+
+  function pintarTextos(d) {
     etiqueta.textContent = d.etiqueta;
     etiqueta.hidden = !d.etiqueta;
     titulo.textContent = d.titulo;
     texto.textContent = d.texto;
+  }
+
+  /* Los textos de cada diapositiva tienen largos distintos. Se mide el más alto
+     y se reserva ese alto (--alto-textos), así la ilustración no cambia de
+     tamaño ni "salta" al pasar de una diapositiva a otra. */
+  function reservarAltoDeTextos() {
+    if (pasoBienvenida.hidden) return;
+    textos.style.removeProperty("--alto-textos");
+    var mayor = 0;
+    diapositivas.forEach(function (d) {
+      pintarTextos(d);
+      mayor = Math.max(mayor, textos.offsetHeight);
+    });
+    pintarTextos(diapositivas[actual]);
+    textos.style.setProperty("--alto-textos", mayor + "px");
+  }
+  window.addEventListener("resize", reservarAltoDeTextos);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(reservarAltoDeTextos);
+
+  function pintarDiapositiva() {
+    var d = diapositivas[actual];
+    imagen.src = d.imagen;
+    imagen.alt = d.alt;
+    pintarTextos(d);
     textoSiguiente.textContent = actual === diapositivas.length - 1 ? "Empezar" : "Siguiente";
     puntos.setAttribute("aria-label", "Diapositiva " + (actual + 1) + " de " + diapositivas.length);
     Array.prototype.forEach.call(puntos.children, function (punto, i) {
@@ -374,6 +397,7 @@ function pantallaIndex() {
     pasoBienvenida.hidden = false;
     actual = diapositivas.length - 1;
     pintarDiapositiva();
+    reservarAltoDeTextos();
     window.scrollTo(0, 0);
   });
 
@@ -411,6 +435,7 @@ function pantallaIndex() {
 
   /* Al abrir: index.html#situacion y index.html#pendientes llevan directo al formulario */
   pintarDiapositiva();
+  reservarAltoDeTextos();
   var pedido = window.location.hash.replace("#", "");
   if (pedido === "situacion") mostrarSituacion(false);
   else if (pedido === "pendientes") mostrarSituacion(true);
