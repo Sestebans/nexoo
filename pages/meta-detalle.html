@@ -77,6 +77,7 @@
           </div>
           <button type="submit" class="boton boton--completo">Guardar cambios</button>
           <button type="button" class="boton boton--texto boton--completo" id="boton-cancelar-ajuste">Cancelar</button>
+          <button type="button" class="boton boton--peligro boton--completo" id="boton-eliminar-meta">Eliminar meta</button>
         </form>
       </section>
 
@@ -96,6 +97,7 @@
         <div class="paso__fondo">
           <a class="boton boton--completo" href="crear-meta.html">Crear otra meta</a>
           <a class="boton boton--texto boton--completo" href="metas.html">Volver a mis metas</a>
+          <button type="button" class="boton boton--texto boton--completo" id="boton-eliminar-cumplida">Eliminar esta meta</button>
         </div>
       </section>
 
@@ -112,6 +114,20 @@
           <a class="boton boton--secundario" href="crear-meta.html">Crear una meta</a>
         </div>
       </section>
+
+      <!-- Confirmación para eliminar la meta. app.js la pone justo debajo del
+           botón "Eliminar" que se tocó (en Ajustar meta o en la celebración). -->
+      <div class="pila" id="confirmar-eliminar" role="alertdialog" aria-labelledby="confirmar-eliminar-titulo" aria-describedby="confirmar-eliminar-texto" hidden>
+        <div class="alerta alerta--aviso">
+          <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+          <span id="confirmar-eliminar-titulo"></span>
+        </div>
+        <p id="confirmar-eliminar-texto"></p>
+        <div class="fila">
+          <button type="button" class="boton boton--terciario boton--completo" id="boton-cancelar-eliminar">Cancelar</button>
+          <button type="button" class="boton boton--peligro boton--completo" id="boton-confirmar-eliminar">Sí, eliminar</button>
+        </div>
+      </div>
 
     </div>
   </main>

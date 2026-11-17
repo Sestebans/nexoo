@@ -1831,6 +1831,7 @@ function pantallaMetaDetalle() {
   }
 
   function mostrarAjuste(abierto) {
+    cerrarConfirmacionEliminar(false);
     formularioAjuste.hidden = !abierto;
     formularioAbono.hidden = abierto;
     botonAjustar.hidden = abierto;
@@ -1892,6 +1893,45 @@ function pantallaMetaDetalle() {
     if (cumplida()) { mostrarCelebracion(); return; }
     pintarMeta();
     mostrarAvisoTemporal(aviso, "Meta actualizada");
+  });
+
+  /* --- Eliminar la meta (con confirmación) ---
+     El botón está en "Ajustar meta" (meta en curso) y en la celebración (meta
+     cumplida). La tarjeta de confirmación es una sola: se pone debajo del botón
+     que se tocó. */
+  var confirmarEliminar = document.getElementById("confirmar-eliminar");
+  var botonQueAbrio = null;
+
+  function abrirConfirmacionEliminar(boton) {
+    document.getElementById("confirmar-eliminar-titulo").textContent = "¿Eliminar “" + meta.nombre + "”?";
+    document.getElementById("confirmar-eliminar-texto").textContent = meta.ahorrado > 0
+      ? "NEXO deja de seguir esta meta y los " + pesos(meta.ahorrado) + " que llevas en ella. Tu plata no se mueve. Esto no se puede deshacer."
+      : "NEXO deja de seguir esta meta. Esto no se puede deshacer.";
+    boton.insertAdjacentElement("afterend", confirmarEliminar);
+    boton.hidden = true;
+    botonQueAbrio = boton;
+    confirmarEliminar.hidden = false;
+    confirmarEliminar.scrollIntoView({ block: "center" });
+    document.getElementById("boton-cancelar-eliminar").focus();
+  }
+
+  function cerrarConfirmacionEliminar(devolverFoco) {
+    confirmarEliminar.hidden = true;
+    if (!botonQueAbrio) return;
+    botonQueAbrio.hidden = false;
+    if (devolverFoco) botonQueAbrio.focus();
+    botonQueAbrio = null;
+  }
+
+  ["boton-eliminar-meta", "boton-eliminar-cumplida"].forEach(function (id) {
+    var boton = document.getElementById(id);
+    boton.addEventListener("click", function () { abrirConfirmacionEliminar(boton); });
+  });
+  document.getElementById("boton-cancelar-eliminar").addEventListener("click", function () { cerrarConfirmacionEliminar(true); });
+  document.getElementById("boton-confirmar-eliminar").addEventListener("click", function () {
+    guardarDatos("metas", obtenerDatos("metas").filter(function (m) { return m.id !== meta.id; }));
+    dejarAvisoParaSiguientePantalla("Meta eliminada");
+    window.location.href = "metas.html";
   });
 
   /* --- Al abrir --- */

@@ -263,7 +263,7 @@ a { color: inherit; }
 }
 .boton--texto:hover:not(:disabled) { background: transparent; color: var(--color-primario-hover); }
 
-.boton--peligro { background: var(--color-error-suave); color: var(--color-error); }
+.boton--peligro { background: var(--color-error-suave); color: var(--color-error-texto); }
 .boton--peligro:hover:not(:disabled) { background: var(--color-error); color: var(--color-texto-inverso); }
 
 .boton--pequeno {
@@ -601,7 +601,7 @@ a { color: inherit; }
 }
 .alerta--exito { background: var(--color-exito-suave); color: var(--color-exito); }
 .alerta--aviso { background: var(--color-aviso-suave); color: var(--color-aviso); }
-.alerta--error { background: var(--color-error-suave); color: var(--color-error); }
+.alerta--error { background: var(--color-error-suave); color: var(--color-error-texto); }
 
 /* Aviso temporal ("Gasto actualizado") */
 .aviso-temporal {

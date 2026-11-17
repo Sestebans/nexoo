@@ -239,13 +239,14 @@ Solo lo que se deduce de los diseños y del flujo.
 ### F2.3 Meta: detalle, abono y ajuste
 
 - **Archivo de diseño:** `disenos/prototipo.html` (comparte archivo con todas las pantallas). Ruta `#/metas/:id` (con `?editar=1` para ajustar).
-- **Objetivo:** Esta pantalla existe para que una persona pueda ver cuánto lleva en su meta, abonar y ajustarla. Sabemos que funciona si registra un abono o ajusta la meta sin salir de la pantalla.
-- **Contenido, en orden de importancia:** 1) nombre, porcentaje, lo ahorrado y lo que falta con barra de progreso. 2) abonar. 3) ajustar meta (nombre y valor objetivo). 4) celebración "¡Lo lograste!" al cumplirla.
-- **Qué funciona de verdad:** abonar, ajustar meta, guardar cambios, cancelar, crear otra meta y volver: **Simulado**.
+- **Objetivo:** Esta pantalla existe para que una persona pueda ver cuánto lleva en su meta, abonar, ajustarla o eliminarla. Sabemos que funciona si registra un abono o ajusta la meta sin salir de la pantalla.
+- **Contenido, en orden de importancia:** 1) nombre, porcentaje, lo ahorrado y lo que falta con barra de progreso. 2) abonar. 3) ajustar meta (nombre y valor objetivo). 4) celebración "¡Lo lograste!" al cumplirla. 5) eliminar meta: dentro de Ajustar meta si está en curso, y en la celebración si ya se cumplió; siempre pide confirmación.
+- **Qué funciona de verdad:** abonar, ajustar meta, guardar cambios, cancelar, eliminar meta, crear otra meta y volver: **Simulado**. Las metas cumplidas no se borran solas: la persona decide cuándo eliminarlas.
 - **Está lista cuando:**
   - Se ven nombre, porcentaje, "Te faltan $…" y la barra de progreso.
   - Un abono mayor que cero actualiza lo ahorrado y el porcentaje; con cero o vacío muestra el error.
   - Al completar el monto aparece la celebración con Crear otra meta.
+  - Eliminar meta pide confirmación ("¿Eliminar …?" con Cancelar y Sí, eliminar); al confirmar, vuelve a Metas con el aviso "Meta eliminada".
   - Se ve igual al diseño aprobado.
   - Funciona en celular (375 px de ancho).
 

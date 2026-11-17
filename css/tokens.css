@@ -120,6 +120,7 @@
   --color-aviso-suave: #FBEBCB;
   --color-error: #C73B3F;
   --color-error-suave: #FBE3E3;
+  --color-error-texto: #B83539;       /* texto rojo sobre el fondo rosado (4,8:1; el rojo normal da 4,2:1) */
   --color-error-claro: #FF8A8E;       /* error sobre fondo oscuro */
 
   /* Sobre fondos oscuros (blancos con transparencia) */
