@@ -48,6 +48,8 @@
         </button>
       </div>
 
+      <p class="texto-suave texto-pequeno">No compartas claves ni datos de tarjetas. NEXO da orientación general y no reemplaza a un asesor financiero.</p>
+
       <div class="aviso-temporal" id="aviso-copiloto" role="status" hidden>
         <span></span>
       </div>
@@ -67,8 +69,13 @@
           </div>
         </div>
 
-        <div class="chips chips--desliza" id="preguntas-sugeridas" role="group" aria-label="Preguntas sugeridas"></div>
+      </main>
+    </div>
 
+    <!-- Pie fijo: escribir al alcance del pulgar, encima de la navegación -->
+    <div class="pie-pantalla">
+      <div class="pie-pantalla__barra">
+        <div class="chips chips--desliza" id="preguntas-sugeridas" role="group" aria-label="Preguntas sugeridas"></div>
         <form class="fila" id="formulario-pregunta" novalidate>
           <label class="solo-lectores" for="campo-pregunta">Escribe tu pregunta</label>
           <input class="campo campo--chat" id="campo-pregunta" maxlength="300" autocomplete="off" placeholder="Escribe tu pregunta sobre tu plata…">
@@ -76,38 +83,35 @@
             <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg>
           </button>
         </form>
+      </div>
 
-        <p class="texto-suave texto-pequeno">No compartas claves ni datos de tarjetas. NEXO da orientación general y no reemplaza a un asesor financiero.</p>
-
-      </main>
-    </div>
-
-    <nav class="navegacion" aria-label="Navegación principal">
-      <a class="navegacion__item" href="inicio.html">
-        <span class="navegacion__icono"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span>
-        Inicio
-      </a>
-      <a class="navegacion__item" href="gastos.html">
-        <span class="navegacion__icono"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg></span>
-        Gastos
-      </a>
-      <a class="navegacion__item navegacion__item--activo" href="copiloto.html" aria-current="page">
-        <span class="navegacion__logo">
-          <span class="logo" aria-hidden="true">
-            <svg viewBox="0 0 48 48" aria-hidden="true"><path class="logo__linea" d="M15 32L33 16" stroke-width="3.5" stroke-linecap="round"/><circle class="logo__nodo" cx="15" cy="32" r="5.5"/><circle class="logo__nodo logo__nodo--acento" cx="33" cy="16" r="5.5"/></svg>
+      <nav class="navegacion" aria-label="Navegación principal">
+        <a class="navegacion__item" href="inicio.html">
+          <span class="navegacion__icono"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span>
+          Inicio
+        </a>
+        <a class="navegacion__item" href="gastos.html">
+          <span class="navegacion__icono"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg></span>
+          Gastos
+        </a>
+        <a class="navegacion__item navegacion__item--activo" href="copiloto.html" aria-current="page">
+          <span class="navegacion__logo">
+            <span class="logo" aria-hidden="true">
+              <svg viewBox="0 0 48 48" aria-hidden="true"><path class="logo__linea" d="M15 32L33 16" stroke-width="3.5" stroke-linecap="round"/><circle class="logo__nodo" cx="15" cy="32" r="5.5"/><circle class="logo__nodo logo__nodo--acento" cx="33" cy="16" r="5.5"/></svg>
+            </span>
           </span>
-        </span>
-        Copiloto
-      </a>
-      <a class="navegacion__item" href="metas.html">
-        <span class="navegacion__icono"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span>
-        Metas
-      </a>
-      <a class="navegacion__item" href="foro.html">
-        <span class="navegacion__icono"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
-        Comunidad
-      </a>
-    </nav>
+          Copiloto
+        </a>
+        <a class="navegacion__item" href="metas.html">
+          <span class="navegacion__icono"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span>
+          Metas
+        </a>
+        <a class="navegacion__item" href="foro.html">
+          <span class="navegacion__icono"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+          Comunidad
+        </a>
+      </nav>
+    </div>
   </div>
 
   <script src="../js/config.js"></script>

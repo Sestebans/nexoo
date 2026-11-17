@@ -898,8 +898,10 @@ function pantallaCopiloto() {
     botonNueva.hidden = mensajes.length === 0;
   }
 
+  /* Baja hasta el final de la página: el último mensaje queda justo encima
+     de la caja para escribir (que está fija abajo) */
   function irAlFinal() {
-    if (chat.lastElementChild && chat.lastElementChild.scrollIntoView) chat.lastElementChild.scrollIntoView({ block: "end" });
+    window.scrollTo(0, document.documentElement.scrollHeight);
   }
 
   /* --- Preguntar --- */

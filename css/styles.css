@@ -51,6 +51,22 @@
 /* Un botón o etiqueta que no se estira al ancho de su columna */
 .alinear-inicio { justify-self: start; }
 
+/* Pie fijo de una pantalla: lo que va pegado abajo, al alcance del pulgar
+   (en Copiloto, la caja para escribir y la barra de navegación).
+   El contenido de arriba pasa por detrás al bajar. */
+.pie-pantalla {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  background: var(--color-fondo);
+}
+.pie-pantalla__barra {
+  display: grid;
+  gap: var(--espacio-3);
+  padding: var(--espacio-3) var(--espacio-4);
+  border-top: var(--borde-fino) solid var(--color-borde);
+}
+
 /* Dos tarjetas lado a lado, del mismo ancho (racha y plan en Perfil) */
 .dos-columnas {
   display: grid;
